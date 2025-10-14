@@ -1,4 +1,5 @@
 package org.example.socam_be.domain.user;
 
-public class test {
+public enum Role {
+    USER, ADMIN,ORG
 }
