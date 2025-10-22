@@ -3,6 +3,8 @@ package org.example.socam_be.domain.user;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Getter
 @Setter
@@ -34,6 +36,9 @@ public class User {
 
     private boolean locked = false; // 운영기관 회원가입 -> 관리자 승인 전까지 대기
 
+    @Column(nullable = false)
+    private LocalDateTime createdAt;
+
     // ----------------------------
     // 🏢 운영기관 회원가입 시만 사용되는 필드
     // ----------------------------
@@ -64,20 +69,21 @@ public class User {
     // ----------------------------
     // 🧠 생성자
     // ----------------------------
-    public User(String email, String name, String password) {
+    public User(String email, String name, String password, LocalDateTime createdAt) {
         this.email = email;
         this.name = name;
         this.password = password;
         this.role = Role.USER; // 기본값 설정
+        this.createdAt = createdAt;
     }
 
     public void approveOrganization() {
         this.isApproved = true;
-        this.approvalStatus = ApprovalStatus.APPROVED;
+        this.approvalStatus = ApprovalStatus.PENDING;
     }
 
     public boolean isOrganizationApproved() {
-        return this.role == Role.ORG && this.isApproved;
+        return this.role == Role.ORG && this.isApproved; //운영기관 여부 확인 메서드
     }
 
     public boolean isAdmin() {
