@@ -1,55 +1,53 @@
 package org.example.socam_be.config;
 
 import io.jsonwebtoken.JwtException;
-import org.example.socam_be.util.JwtUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;  // jakarta.servlet 패키지 사용
-import org.springframework.security.authentication.AuthenticationManager;
+import jakarta.servlet.http.HttpServletResponse;
+import org.example.socam_be.util.JwtUtils;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-
 import java.io.IOException;
 import java.util.Collections;
 
+@Component
 public class JwtFilter extends OncePerRequestFilter {
 
-  private final AuthenticationManager authenticationManager;
-
-  // JwtFilter 생성자
-  public JwtFilter(AuthenticationManager authenticationManager) {
-    this.authenticationManager = authenticationManager;
-  }
-
-  // doFilterInternal 메서드 구현
   @Override
-  protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+  protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+          throws ServletException, IOException {
+
+    String path = request.getRequestURI();
+
+    // ✅ 회원가입 / 로그인 / 토큰 갱신은 필터 통과
+    if (path.startsWith("/api/users/register") ||
+            path.startsWith("/api/users/login") ||
+            path.startsWith("/api/auth/refresh")) {
+      filterChain.doFilter(request, response);
+      return;
+    }
+
     String token = request.getHeader("Authorization");
 
-    // Bearer Token인 경우 처리
     if (token != null && token.startsWith("Bearer ")) {
       try {
-        // JWT 토큰에서 이메일 추출
-        System.out.println("test "+token.substring(7));
-        String email = JwtUtils.getEmailFromToken(token.substring(7));  // 'Bearer ' 제거
+        String email = JwtUtils.getEmailFromToken(token.substring(7));
         if (email != null) {
-          // 인증 객체 생성
-          UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-              email, null, Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"))
-          );
-          // 인증 정보를 SecurityContext에 설정
-          SecurityContextHolder.getContext().setAuthentication(authentication);
+          UsernamePasswordAuthenticationToken auth =
+                  new UsernamePasswordAuthenticationToken(
+                          email, null, Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"))
+                  );
+          SecurityContextHolder.getContext().setAuthentication(auth);
         }
       } catch (JwtException | IllegalArgumentException e) {
-        // 토큰이 유효하지 않거나 만료된 경우
         SecurityContextHolder.clearContext();
       }
     }
 
-    // 후속 필터 실행
     filterChain.doFilter(request, response);
   }
 }

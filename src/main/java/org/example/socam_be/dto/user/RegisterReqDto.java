@@ -13,7 +13,7 @@ public class RegisterReqDto {
     private String nickname;
     private String role; // USER, ADMIN, ORG
     private String orgName; // 기관명 (ORG 전용)
-    private String contact; // 기관 연락처
+    private String contact; // 기관 연락처 (ORG 전용)
     private String certificatePath; // 재직자 증명서 경로 (선택)
 
 }
