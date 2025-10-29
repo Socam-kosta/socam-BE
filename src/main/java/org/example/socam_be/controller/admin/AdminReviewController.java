@@ -1,6 +1,7 @@
 package org.example.socam_be.controller.admin;
 
 import lombok.RequiredArgsConstructor;
+import org.example.socam_be.domain.review.ReviewStatus;
 import org.example.socam_be.dto.admin.ReviewResponseDto;
 import org.example.socam_be.dto.admin.ReviewUpdateRequestDto;
 import org.example.socam_be.service.admin.AdminReviewService;
@@ -34,4 +35,15 @@ public class AdminReviewController {
         ReviewResponseDto response = adminReviewService.updateReviewStatus(reviewId, requestDto);
         return ResponseEntity.ok(response);
     }
+    // ===============================================================
+    // ✅ [ADM006] 상태별 리뷰 목록 조회 (APPROVED / REJECTED / PENDING)
+    // ===============================================================
+    // 📌 관리자가 특정 상태별로 리뷰를 필터링해서 조회
+    //     예시 요청: GET /api/admin/reviews/status/APPROVED
+    @GetMapping("/status/{status}")
+    public ResponseEntity<List<ReviewResponseDto>> getReviewsByStatus(@PathVariable ReviewStatus status) {
+        List<ReviewResponseDto> reviews = adminReviewService.getReviewsByStatus(status);
+        return ResponseEntity.ok(reviews);
+    }
+
 }

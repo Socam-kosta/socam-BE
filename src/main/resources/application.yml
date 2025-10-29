@@ -21,6 +21,15 @@ spring:
         show_sql: true       # 콘솔에 SQL 출력 (개발 중 확인용)
     open-in-view: false      # 권장 설정 (lazy 로딩 시 메모리 누수 방지)
 
+logging:
+  level:
+    org.springframework.security: DEBUG
+
+clova:
+  ocr:
+    url: "http://clovaocr-api-kr.ncloud.com/external/v1/47261/ae54612aa498e81338684f163490fa44d13c51718067382aeedfb1180dfb0e3a"
+    secret-key: "YW9DSGJwUW9mbHlBeEVickdmeENWUmtuaHBUdHdSTHM="
+
   # 비밀번호 재설정용 이메일 전송
   mail:
     host: smtp.gmail.com
@@ -43,12 +52,3 @@ custom:
       username: joo861127@naver.com       # ✅ 공통 Naver 계정
       password: wnehghks1!                 # ✅ Naver 비밀번호 (SMTP 허용 설정 필요)
       ssl: true
-
-logging:
-  level:
-    org.springframework.security: DEBUG
-
-clova:
-  ocr:
-    url: "http://clovaocr-api-kr.ncloud.com/external/v1/47261/ae54612aa498e81338684f163490fa44d13c51718067382aeedfb1180dfb0e3a"
-    secret-key: "YW9DSGJwUW9mbHlBeEVickdmeENWUmtuaHBUdHdSTHM="
