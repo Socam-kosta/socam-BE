@@ -27,18 +27,26 @@ public class UserService {
     private final ReviewRepository reviewRepository;
 
     public User findByEmail(String email) {
-        return userRepository.findById(email)
+        return userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
     }
 
+    // ✅ 이메일 & 닉네임 중복 검사
     public boolean isEmailDuplicate(String email) {
         return userRepository.existsByEmail(email);
+    }
+
+    public boolean isNicknameDuplicate(String nickname) {
+        return userRepository.existsByNickname(nickname);
     }
 
     // ✅ 회원가입
     public UserResDto registerUser(RegisterReqDto dto) {
         if (isEmailDuplicate(dto.getEmail())) {
             throw new IllegalArgumentException("이미 등록된 이메일입니다.");
+        }
+        if (isNicknameDuplicate(dto.getNickname())) {
+            throw new IllegalArgumentException("이미 사용 중인 닉네임입니다.");
         }
 
         Role role = Role.valueOf(dto.getRole().toUpperCase());
@@ -57,12 +65,12 @@ public class UserService {
         user.setContact(dto.getContact());
         user.setCertificatePath(dto.getCertificatePath());
 
-        return new UserResDto(userRepository.save(user));
+        return new UserResDto(userRepository.saveAndFlush(user));
     }
 
     // ✅ 로그인
     public Map<String, String> login(LoginReqDto dto) {
-        User user = userRepository.findById(dto.getEmail())
+        User user = userRepository.findByEmail(dto.getEmail())
                 .orElseThrow(() -> new CustomAuthException("존재하지 않는 사용자입니다.", ErrorCode.USER_NOT_FOUND));
 
         if (user.getRole() == Role.ORG && !user.isApproved()) {
@@ -73,7 +81,6 @@ public class UserService {
             throw new CustomAuthException("비밀번호가 올바르지 않습니다.", ErrorCode.INVALID_PASSWORD);
         }
 
-        // ✅ 이메일 기반 토큰 발급
         String accessToken = JwtUtils.generateAccessToken(user.getEmail(), user.getRole().name(), user.getName());
         String refreshToken = JwtUtils.generateRefreshToken(user.getEmail(), user.getRole().name(), user.getName());
 
@@ -87,15 +94,14 @@ public class UserService {
         );
     }
 
-
     // ✅ 회원정보 수정
     @Transactional
     public UserResDto updateUserInfo(String email, UpdateUserReqDto dto) {
-        User user = userRepository.findById(email)
+        User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-        if (!user.getEmail().equals(dto.getEmail()) && userRepository.existsByEmail(dto.getEmail())) {
-            throw new IllegalArgumentException("이미 등록된 이메일입니다.");
+        if (!user.getNickname().equals(dto.getNickname()) && isNicknameDuplicate(dto.getNickname())) {
+            throw new IllegalArgumentException("이미 사용 중인 닉네임입니다.");
         }
 
         user.setName(dto.getName());
@@ -104,13 +110,13 @@ public class UserService {
             user.setPassword(passwordEncoder.encode(dto.getPassword()));
         }
 
-        return new UserResDto(userRepository.save(user));
+        return new UserResDto(user); // @Transactional dirty checking 적용됨
     }
 
     // ✅ 회원 탈퇴
     @Transactional
     public void deleteUser(String email) {
-        User user = userRepository.findById(email)
+        User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
         userRepository.delete(user);
     }
