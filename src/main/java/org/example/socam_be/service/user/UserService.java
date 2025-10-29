@@ -1,4 +1,4 @@
-package org.example.socam_be.service;
+package org.example.socam_be.service.user;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +25,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final ReviewRepository reviewRepository;
+    private final MailService mailService;
 
     public User findByEmail(String email) {
         return userRepository.findByEmail(email)
@@ -49,7 +50,8 @@ public class UserService {
             throw new IllegalArgumentException("이미 사용 중인 닉네임입니다.");
         }
 
-        Role role = Role.valueOf(dto.getRole().toUpperCase());
+        // ✅ role 값이 null이면 기본 USER 적용
+        Role role = Role.valueOf(dto.getRole() != null ? dto.getRole().toUpperCase() : "USER");
         String encodedPassword = passwordEncoder.encode(dto.getPassword());
 
         User user = new User();
@@ -124,5 +126,35 @@ public class UserService {
     // ✅ 리뷰 조회
     public List<Review> getReviews(String email) {
         return reviewRepository.findByEmail(email);
+    }
+
+    // ✅ 비밀번호 재설정 메일 발송
+    public void requestPasswordReset(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("등록되지 않은 이메일입니다."));
+
+        // 10분 유효한 토큰 생성
+        String token = JwtUtils.generatePasswordResetToken(email);
+
+        // 메일 발송 (링크 포함)
+        mailService.sendPasswordResetMail(email, token);
+    }
+
+    // ✅ 비밀번호 변경
+    @Transactional
+    public void resetPassword(String token, String newPassword, String confirmPassword) {
+        if (!JwtUtils.validateToken(token)) {
+            throw new IllegalArgumentException("토큰이 유효하지 않거나 만료되었습니다.");
+        }
+
+        if (!newPassword.equals(confirmPassword)) {
+            throw new IllegalArgumentException("비밀번호와 비밀번호 확인이 일치하지 않습니다.");
+        }
+
+        String email = JwtUtils.getEmailFromToken(token);
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+
+        user.setPassword(passwordEncoder.encode(newPassword));
     }
 }
