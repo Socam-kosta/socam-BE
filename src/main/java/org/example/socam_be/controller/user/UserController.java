@@ -2,7 +2,7 @@ package org.example.socam_be.controller.user;
 
 import lombok.RequiredArgsConstructor;
 import org.example.socam_be.dto.user.*;
-import org.example.socam_be.service.UserService;
+import org.example.socam_be.service.user.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -52,4 +52,25 @@ public class UserController {
         userService.deleteUser(email);
         return ResponseEntity.noContent().build();
     }
+
+    // ✅ 비밀번호 재설정 메일 요청
+    @PostMapping("/password-reset-request")
+    public ResponseEntity<Map<String, String>> requestPasswordReset(@RequestBody Map<String, String> body) {
+        String email = body.get("email");
+        userService.requestPasswordReset(email);
+        return ResponseEntity.ok(Map.of("message", "비밀번호 재설정 메일이 발송되었습니다."));
+    }
+
+    // ✅ 실제 비밀번호 변경 (새 비밀번호 제출)
+    @PostMapping("/reset-password")
+    public ResponseEntity<Map<String, String>> resetPassword(@RequestBody Map<String, String> body) {
+        String token = body.get("token");
+        String newPassword = body.get("newPassword");
+        String confirmPassword = body.get("confirmPassword"); // 🔹 추가된 부분
+
+        userService.resetPassword(token, newPassword, confirmPassword); // 🔹 3개 인자 전달
+
+        return ResponseEntity.ok(Map.of("message", "비밀번호가 성공적으로 변경되었습니다."));
+    }
+
 }

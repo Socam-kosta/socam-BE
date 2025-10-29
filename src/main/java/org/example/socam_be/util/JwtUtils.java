@@ -37,6 +37,17 @@ public class JwtUtils {
             .signWith(SECRET_KEY, SignatureAlgorithm.HS512)
             .compact();
   }
+  // ✅ 비밀번호 재설정용 JWT (10분 유효)
+  public static String generatePasswordResetToken(String email) {
+    long expiration = 10 * 60 * 1000; // 10분
+    return Jwts.builder()
+            .setSubject(email)
+            .claim("email", email)
+            .setIssuedAt(new Date())
+            .setExpiration(new Date(System.currentTimeMillis() + expiration))
+            .signWith(SECRET_KEY, SignatureAlgorithm.HS512)
+            .compact();
+  }
 
   // ✅ 이메일 추출
   public static String extractEmail(String jwtWithBearer) {
