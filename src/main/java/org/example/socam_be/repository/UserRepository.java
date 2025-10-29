@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, String> {
 
@@ -18,4 +19,6 @@ public interface UserRepository extends JpaRepository<User, String> {
 
     @Query("SELECT u FROM User u WHERE u.role = :role ORDER BY u.email ASC")
     List<User> findByRoleOrderByEmail(@Param("role") Role role);
+
+    Optional<User> findByEmail(String email);
 }
