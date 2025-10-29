@@ -20,3 +20,7 @@ spring:
         format_sql: true
         show_sql: true       # 콘솔에 SQL 출력 (개발 중 확인용)
     open-in-view: false      # 권장 설정 (lazy 로딩 시 메모리 누수 방지)
+
+logging:
+  level:
+    org.springframework.security: DEBUG
