@@ -7,20 +7,18 @@ import org.example.socam_be.domain.user.User;
 
 @Getter
 public class UserResDto {
-    private Long id;
-    private String email;
-    private String name;
-    private String nickname;
-    private Role role;
-    private boolean isApproved;
-    private boolean locked;
-    private ApprovalStatus approvalStatus;
-    private String orgName;
-    private String contact;
-    private String certificatePath;
+    private final String email;
+    private final String name;
+    private final String nickname;
+    private final Role role;
+    private final boolean isApproved;
+    private final boolean locked;
+    private final ApprovalStatus approvalStatus;
+    private final String orgName;
+    private final String contact;
+    private final String certificatePath;
 
     public UserResDto(User user) {
-        this.id = user.getId();
         this.email = user.getEmail();
         this.name = user.getName();
         this.nickname = user.getNickname();
