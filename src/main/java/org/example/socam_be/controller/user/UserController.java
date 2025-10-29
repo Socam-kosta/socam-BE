@@ -17,48 +17,36 @@ public class UserController {
 
     private final UserService userService;
 
-    /**
-     * 🧩 회원가입
-     */
+    /** 🧩 회원가입 */
     @PostMapping("/register")
     public ResponseEntity<UserResDto> register(@RequestBody RegisterReqDto dto) {
         UserResDto registeredUser = userService.registerUser(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(registeredUser);
     }
 
-    /**
-     * 🔐 로그인
-     */
+    /** 🔐 로그인 */
     @PostMapping("/login")
     public ResponseEntity<Map<String, String>> login(@RequestBody LoginReqDto dto) {
         Map<String, String> tokens = userService.login(dto);
         return ResponseEntity.ok(tokens);
     }
 
-    // ✅ 내 정보 조회 (토큰 기반)
+    /** ✅ 내 정보 조회 (JWT 기반) */
     @GetMapping("/me")
     public ResponseEntity<UserResDto> getMyInfo() {
-        // JWT Filter에서 저장한 email 꺼내기
         String email = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         UserResDto userInfo = new UserResDto(userService.findByEmail(email));
         return ResponseEntity.ok(userInfo);
     }
 
-    /**
-     * ✏️ 회원 정보 수정
-     */
+    /** ✏️ 회원정보 수정 */
     @PutMapping("/{email}")
-    public ResponseEntity<UserResDto> updateUser(
-            @PathVariable String email,
-            @RequestBody UpdateUserReqDto dto
-    ) {
+    public ResponseEntity<UserResDto> updateUser(@PathVariable String email, @RequestBody UpdateUserReqDto dto) {
         UserResDto updated = userService.updateUserInfo(email, dto);
         return ResponseEntity.ok(updated);
     }
 
-    /**
-     * ❌ 회원 탈퇴
-     */
+    /** ❌ 회원 탈퇴 */
     @DeleteMapping("/{email}")
     public ResponseEntity<Void> deleteUser(@PathVariable String email) {
         userService.deleteUser(email);
