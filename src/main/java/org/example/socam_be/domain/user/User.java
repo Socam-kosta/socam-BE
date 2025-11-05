@@ -10,12 +10,10 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 public class User {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id; //회원 식별용
-
     // ----------------------------
     // 🧩 기본 회원정보
     // ----------------------------
+    @Id
     @Column(nullable = false, length = 30, unique = true)
     private String email; //아이디용
 
