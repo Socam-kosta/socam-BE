@@ -9,6 +9,7 @@ import org.example.socam_be.domain.user.User;
 import org.example.socam_be.dto.user.*;
 import org.example.socam_be.exception.CustomAuthException;
 import org.example.socam_be.exception.ErrorCode;
+import org.example.socam_be.repository.RefreshTokenRepository;
 import org.example.socam_be.repository.ReviewRepository;
 import org.example.socam_be.repository.UserRepository;
 import org.example.socam_be.util.JwtUtils;
@@ -26,6 +27,7 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final ReviewRepository reviewRepository;
     private final MailService mailService;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     public User findByEmail(String email) {
         return userRepository.findByEmail(email)
@@ -94,6 +96,15 @@ public class UserService {
                 "email", user.getEmail(),
                 "nickname", user.getNickname()
         );
+    }
+
+    // ✅ 로그아웃 시 리프레시 토큰 삭제
+    public void deleteByUser(User user) {
+        refreshTokenRepository.deleteByUser(user);
+    }
+
+    public boolean existsByRefreshToken(String refreshToken) {
+        return refreshTokenRepository.findByRefreshToken(refreshToken) != null;
     }
 
     // ✅ 회원정보 수정
