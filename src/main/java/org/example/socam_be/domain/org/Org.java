@@ -30,7 +30,7 @@ public class Org {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private OrgStatus isApproved;
+    private OrgStatus status;
 
     @Column(nullable = false)
     private String certificatePath;
