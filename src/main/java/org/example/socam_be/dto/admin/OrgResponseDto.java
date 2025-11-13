@@ -18,6 +18,6 @@ public class OrgResponseDto {
     private String orgName;
     private String contact;
     private LocalDateTime createdAt;
-    private OrgStatus isApproved;
+    private String status;
     private String certificatePath;
 }
