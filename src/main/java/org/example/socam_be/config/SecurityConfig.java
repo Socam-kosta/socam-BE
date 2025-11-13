@@ -34,14 +34,26 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
-                                "/api/users/**",
+                                // 일반 유저
+                                "/api/users/register",
+                                "/api/users/login",
+
+                                // 토큰 재발급
                                 "/api/auth/**",
+
+                                // 운영기관 비인증 접근 허용
                                 "/api/org/register",
                                 "/api/org/login",
+                                "/api/org/password-reset-request",
+                                "/api/org/reset-password",
+
+                                // swagger
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
                                 "/v3/api-docs.yaml"
-                                ).permitAll()
+                        ).permitAll()
+
+                        // 그 외 요청은 인증 필요
                         .anyRequest().authenticated()
                 )
                 .formLogin(AbstractHttpConfigurer::disable)
@@ -53,6 +65,7 @@ public class SecurityConfig {
                 }));
 
         http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+
         return http.build();
     }
 
