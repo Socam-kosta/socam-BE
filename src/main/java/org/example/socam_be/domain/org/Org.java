@@ -34,4 +34,14 @@ public class Org {
 
     @Column(nullable = false)
     private String certificatePath;
+
+    @PrePersist
+    public void prePersist() {
+        if (this.status == null) {
+            this.status = OrgStatus.PENDING; //상태 기본값
+        }
+        if (this.createdAt == null) {
+            this.createdAt = LocalDateTime.now();
+        }
+    }
 }

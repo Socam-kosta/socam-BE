@@ -3,6 +3,8 @@ package org.example.socam_be.domain.user;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Getter
 @Setter
@@ -27,6 +29,9 @@ public class User {
     @Column(nullable = false)
     private Role role = Role.USER; // USER, ADMIN, ORG
 
+    @Column(nullable = false)
+    private LocalDateTime createdAt;
+
     public User(String email, String name, String password) {
         this.email = email;
         this.name = name;
@@ -36,5 +41,10 @@ public class User {
 
     public boolean isAdmin() {
         return this.role == Role.ADMIN;
+    }
+
+    @PrePersist
+    public void prePersist() {
+        this.createdAt = LocalDateTime.now();
     }
 }
