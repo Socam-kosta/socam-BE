@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface OrgRepository extends JpaRepository<Org, Long> {
+public interface OrgRepository extends JpaRepository<Org, String> {
 
     // 상태(status) 기준으로 운영기관 조회 (예: PENDING, APPROVED, REJECTED)
     List<Org> findByStatus(OrgStatus status);
