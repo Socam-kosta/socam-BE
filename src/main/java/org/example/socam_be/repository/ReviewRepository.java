@@ -12,7 +12,9 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 
     //✅ 상태(status) 기준으로 리뷰조회 (예: PENDING, APPROVED, REJECTED)
     List<Review> findByStatus(ReviewStatus status);
-
     //✅ 이메일 기준으로 리뷰조회 (USER 파트에서도 사용가능)
     List<Review> findByEmail(String email);
+    // ✅ 강의 상세페이지에서 해당 강의의 모든 리뷰 조회
+    List<Review> findByLectureId(String lectureId);
+
 }
