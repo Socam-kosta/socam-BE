@@ -1,11 +1,13 @@
 package org.example.socam_be.controller.org;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.example.socam_be.dto.org.LectureDetailDto;
 import org.example.socam_be.dto.org.LectureRequestDto;
 import org.example.socam_be.dto.org.LectureResponseDto;
 import org.example.socam_be.service.org.OrgLectureService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -14,6 +16,9 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/orgs/lecture")
 @RequiredArgsConstructor
+@SecurityRequirement(name = "BearerAuth")
+@PreAuthorize("hasRole('ORG')")
+
 public class OrgLectureController {
 
     private final OrgLectureService orgLectureService;

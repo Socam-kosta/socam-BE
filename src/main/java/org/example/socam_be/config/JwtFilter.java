@@ -26,7 +26,8 @@ public class JwtFilter extends OncePerRequestFilter {
     String path = request.getRequestURI();
 
     // ✅ 회원가입 / 로그인 / 토큰 갱신은 필터 통과
-    if (path.startsWith("/api/users/register") ||
+    if (path.equals("/api/admin/login") ||  // ⭐⭐ 여기 admin 로그인 허용 추가 ⭐⭐
+            path.startsWith("/api/users/register") ||
             path.startsWith("/api/users/login") ||
             path.startsWith("/api/auth/refresh")) {
       filterChain.doFilter(request, response);

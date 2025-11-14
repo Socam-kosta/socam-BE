@@ -1,11 +1,13 @@
 package org.example.socam_be.controller.admin;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.example.socam_be.domain.review.ReviewStatus;
 import org.example.socam_be.dto.admin.ReviewResponseDto;
 import org.example.socam_be.dto.admin.ReviewUpdateRequestDto;
 import org.example.socam_be.service.admin.AdminReviewService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -13,6 +15,8 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/admin/reviews") // 관리자 리뷰 API
 @RequiredArgsConstructor
+@SecurityRequirement(name = "BearerAuth")
+@PreAuthorize("hasRole('ADMIN')")
 public class AdminReviewController {
 
     private final AdminReviewService adminReviewService;

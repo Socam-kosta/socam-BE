@@ -1,10 +1,12 @@
 package org.example.socam_be.controller.org;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.example.socam_be.domain.org.Org;
 import org.example.socam_be.dto.org.*;
 import org.example.socam_be.service.org.OrgService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -12,6 +14,8 @@ import java.util.Map;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/org")
+@SecurityRequirement(name = "BearerAuth")
+
 public class OrgController {
 
     private final OrgService orgService;

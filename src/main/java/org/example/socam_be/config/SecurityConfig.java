@@ -33,17 +33,32 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                        // 완전 오픈
                         .requestMatchers(
-                                "/api/users/**",
                                 "/api/auth/**",
+                                "/api/users/**",
                                 "/api/org/register",
                                 "/api/org/login",
+                                "/api/admin/login",
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
                                 "/v3/api-docs.yaml"
-                                ).permitAll()
+                        ).permitAll()
+
+                        // 관리자 보호
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+
+                        // 운영기관 보호: 로그인 이후 사용할 API만 지정
+                        .requestMatchers(
+                                "/api/org/lecture/**",
+                                "/api/org/me",
+                                "/api/org/delete/**"
+                        ).hasRole("ORG")
+
+                        // 그 외 전체 인증 필요
                         .anyRequest().authenticated()
                 )
+
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .exceptionHandling(ex -> ex.authenticationEntryPoint((req, res, excep) -> {

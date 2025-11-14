@@ -1,9 +1,11 @@
 package org.example.socam_be.controller.admin;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.example.socam_be.dto.admin.AdminLoginReqDto;
 import org.example.socam_be.service.admin.AdminLoginService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,6 +16,8 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/admin")
 @RequiredArgsConstructor
+@SecurityRequirement(name = "BearerAuth")
+
 public class AdminLoginController {
 
     private final AdminLoginService adminLoginService;
