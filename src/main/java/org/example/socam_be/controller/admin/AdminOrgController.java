@@ -1,10 +1,12 @@
 package org.example.socam_be.controller.admin;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
-import org.example.socam_be.dto.admin.OrgResponseDto;
-import org.example.socam_be.dto.admin.OrgUpdateRequestDto;
+import org.example.socam_be.dto.org.OrgResponseDto;
+import org.example.socam_be.dto.org.OrgUpdateRequestDto;
 import org.example.socam_be.service.admin.AdminOrgService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -12,6 +14,8 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/admin/orgs")
 @RequiredArgsConstructor
+@SecurityRequirement(name = "BearerAuth")
+@PreAuthorize("hasRole('ADMIN')")
 public class AdminOrgController {
 
     private final AdminOrgService adminOrgService;
