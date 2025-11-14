@@ -3,7 +3,6 @@ package org.example.socam_be.service.user;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.example.socam_be.domain.review.Review;
-import org.example.socam_be.domain.user.ApprovalStatus;
 import org.example.socam_be.domain.user.Role;
 import org.example.socam_be.domain.user.User;
 import org.example.socam_be.dto.user.*;
@@ -62,24 +61,14 @@ public class UserService {
         user.setNickname(dto.getNickname());
         user.setPassword(encodedPassword);
         user.setRole(role);
-        user.setApprovalStatus(role == Role.ORG ? ApprovalStatus.PENDING : ApprovalStatus.APPROVED);
-        user.setApproved(role != Role.ORG);
-        user.setLocked(role == Role.ORG);
-        user.setOrgName(dto.getOrgName());
-        user.setContact(dto.getContact());
-        user.setCertificatePath(dto.getCertificatePath());
 
         return new UserResDto(userRepository.saveAndFlush(user));
     }
 
-    // ✅ 로그인
+    // 로그인
     public Map<String, String> login(LoginReqDto dto) {
         User user = userRepository.findByEmail(dto.getEmail())
                 .orElseThrow(() -> new CustomAuthException("존재하지 않는 사용자입니다.", ErrorCode.USER_NOT_FOUND));
-
-        if (user.getRole() == Role.ORG && !user.isApproved()) {
-            throw new CustomAuthException("관리자의 승인을 기다려 주세요.", ErrorCode.ORG_NOT_APPROVED);
-        }
 
         if (!passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
             throw new CustomAuthException("비밀번호가 올바르지 않습니다.", ErrorCode.INVALID_PASSWORD);
