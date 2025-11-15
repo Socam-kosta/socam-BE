@@ -1,16 +1,20 @@
 package org.example.socam_be.config;
 
 import io.jsonwebtoken.JwtException;
+import org.example.socam_be.util.JwtUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.example.socam_be.util.JwtUtils;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Collections;
 
 @Component
 public class JwtFilter extends OncePerRequestFilter {
@@ -24,8 +28,9 @@ public class JwtFilter extends OncePerRequestFilter {
 
     String path = request.getRequestURI();
 
-    // 인증이 필요 없는 API 목록
-    if (path.startsWith("/api/users/register") ||
+    // ✅ 회원가입 / 로그인 / 토큰 갱신은 필터 통과
+    if (path.equals("/api/admin/login") ||  // ⭐⭐ 여기 admin 로그인 허용 추가 ⭐⭐
+            path.startsWith("/api/users/register") ||
             path.startsWith("/api/users/login") ||
             path.startsWith("/api/auth/refresh") ||
             path.startsWith("/api/org/register") ||
@@ -40,16 +45,15 @@ public class JwtFilter extends OncePerRequestFilter {
     String token = request.getHeader("Authorization");
 
     if (token != null && token.startsWith("Bearer ")) {
-      token = token.substring(7);
-
       try {
-        String email = JwtUtils.getEmailFromToken(token);
-
+        String email = JwtUtils.getEmailFromToken(token.substring(7));
         if (email != null) {
-          // Controller에서 request.getAttribute("email")로 사용
-          request.setAttribute("email", email);
+          UsernamePasswordAuthenticationToken auth =
+                  new UsernamePasswordAuthenticationToken(
+                          email, null, Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"))
+                  );
+          SecurityContextHolder.getContext().setAuthentication(auth);
         }
-
       } catch (JwtException | IllegalArgumentException e) {
         SecurityContextHolder.clearContext();
       }

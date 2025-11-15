@@ -33,6 +33,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                        // 완전 오픈
                         .requestMatchers(
                                 // 일반 유저
                                 "/api/users/register",
@@ -42,10 +43,14 @@ public class SecurityConfig {
                                 "/api/auth/**",
 
                                 // 운영기관 비인증 접근 허용
+                                "/api/users/**",
                                 "/api/org/register",
                                 "/api/org/login",
                                 "/api/org/password-reset-request",
                                 "/api/org/reset-password",
+
+                                // 관리자 로그인
+                                "/api/admin/login",
 
                                 // swagger
                                 "/swagger-ui/**",
@@ -53,7 +58,17 @@ public class SecurityConfig {
                                 "/v3/api-docs.yaml"
                         ).permitAll()
 
-                        // 그 외 요청은 인증 필요
+                        // 관리자 보호
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+
+                        // 운영기관 보호: 로그인 이후 사용할 API만 지정
+                        .requestMatchers(
+                                "/api/org/lecture/**",
+                                "/api/org/me",
+                                "/api/org/delete/**"
+                        ).hasRole("ORG")
+
+                        // 그 외 전체 인증 필요
                         .anyRequest().authenticated()
                 )
                 .formLogin(AbstractHttpConfigurer::disable)
@@ -65,7 +80,6 @@ public class SecurityConfig {
                 }));
 
         http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
-
         return http.build();
     }
 
