@@ -66,14 +66,15 @@ public class OrgLectureService {
         lectureRepository.save(lecture);
     }
 
-    // 등록한 강의 조회
-    public List<LectureResponseDto> getMyLectures(String email) {
-        List<Lecture> lectures = lectureRepository.findByEmail(email);
+    // 상태별 등록한 강의 조회
+    public List<LectureResponseDto> getMyLectures(String email, LectureStatus status) {
+        List<Lecture> lectures = lectureRepository.findByEmailAndStatus(email, status);
 
         return lectures.stream()
                 .map(lecture -> LectureResponseDto.builder()
                         .id(lecture.getId())
                         .title(lecture.getTitle())
+                        .status(lecture.getStatus())
                         .build())
                 .toList();
     }
@@ -93,6 +94,7 @@ public class OrgLectureService {
                         .startDate(lecture.getStartDate())
                         .endDate(lecture.getEndDate())
                         .description(lecture.getDescription())
+                        .status(lecture.getStatus())
                         .build();
     }
 
@@ -104,6 +106,10 @@ public class OrgLectureService {
 
         if (!lecture.getEmail().equals(dto.getEmail())) {
             throw new IllegalArgumentException("본인이 등록한 강의만 수정할 수 있습니다.");
+        }
+
+        if (lecture.getStatus() == LectureStatus.PENDING) {
+            throw new IllegalArgumentException("승인 대기중인 강의는 수정할 수 없습니다.");
         }
 
         // 내용 유효성 검사

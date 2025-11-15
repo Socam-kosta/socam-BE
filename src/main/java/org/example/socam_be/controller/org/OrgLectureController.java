@@ -2,6 +2,7 @@ package org.example.socam_be.controller.org;
 
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
+import org.example.socam_be.domain.lecture.LectureStatus;
 import org.example.socam_be.dto.org.LectureDetailDto;
 import org.example.socam_be.dto.org.LectureRequestDto;
 import org.example.socam_be.dto.org.LectureResponseDto;
@@ -51,12 +52,13 @@ public class OrgLectureController {
         return ResponseEntity.ok("강의 등록 완료 (승인 대기)");
     }
 
-    // [ORG002] 등록한 강의 조회
+    // [ORG002] 상태별 등록한 강의 조회
     @GetMapping("/{email}")
     public ResponseEntity<List<LectureResponseDto>> getMyLectures(
-            @PathVariable String email
+            @PathVariable String email,
+            @RequestParam LectureStatus status
     ) {
-        List<LectureResponseDto> lectures = orgLectureService.getMyLectures(email);
+        List<LectureResponseDto> lectures = orgLectureService.getMyLectures(email, status);
         return ResponseEntity.ok(lectures);
     }
 
