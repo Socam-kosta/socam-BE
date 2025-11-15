@@ -2,6 +2,7 @@ package org.example.socam_be.dto.org;
 
 import lombok.Builder;
 import lombok.Getter;
+import org.example.socam_be.domain.lecture.LectureStatus;
 
 import java.time.LocalDate;
 
@@ -17,4 +18,5 @@ public class LectureDetailDto {
     private LocalDate startDate; // 개강일
     private LocalDate endDate; // 종강일
     private String description; // 간단 설명
+    private LectureStatus status; // 상태(PENDING, APPROVED, REJECTED)
 }
