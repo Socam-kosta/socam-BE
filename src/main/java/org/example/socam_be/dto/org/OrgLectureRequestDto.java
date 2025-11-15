@@ -7,7 +7,7 @@ import java.time.LocalDate;
 
 @Getter
 @Setter
-public class LectureRequestDto {
+public class OrgLectureRequestDto {
 
     private String email;
     private String title;

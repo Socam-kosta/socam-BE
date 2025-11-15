@@ -3,9 +3,9 @@ package org.example.socam_be.controller.org;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.example.socam_be.domain.lecture.LectureStatus;
-import org.example.socam_be.dto.org.LectureDetailDto;
-import org.example.socam_be.dto.org.LectureRequestDto;
-import org.example.socam_be.dto.org.LectureResponseDto;
+import org.example.socam_be.dto.lecture.LectureDetailDto;
+import org.example.socam_be.dto.org.OrgLectureRequestDto;
+import org.example.socam_be.dto.lecture.LectureResponseDto;
 import org.example.socam_be.service.org.OrgLectureService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -37,7 +37,7 @@ public class OrgLectureController {
             @RequestPart("endDate") LocalDate endDate,
             @RequestPart("description") String description
     ) {
-        LectureRequestDto dto = new LectureRequestDto();
+        OrgLectureRequestDto dto = new OrgLectureRequestDto();
         dto.setEmail(email);
         dto.setTitle(title);
         dto.setInstructor(instructor);
@@ -73,7 +73,7 @@ public class OrgLectureController {
 
     // [ORG002] 강의 수정 요청
     @PutMapping("/{lectureId}")
-    public ResponseEntity<String> updateLecture(@PathVariable Long lectureId, @RequestBody LectureRequestDto dto) {
+    public ResponseEntity<String> updateLecture(@PathVariable Long lectureId, @RequestBody OrgLectureRequestDto dto) {
         orgLectureService.updateLecture(lectureId, dto);
         return ResponseEntity.ok("강의 수정 완료 (승인 대기)");
     }

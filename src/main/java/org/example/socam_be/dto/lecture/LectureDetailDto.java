@@ -1,4 +1,4 @@
-package org.example.socam_be.dto.org;
+package org.example.socam_be.dto.lecture;
 
 import lombok.Builder;
 import lombok.Getter;
