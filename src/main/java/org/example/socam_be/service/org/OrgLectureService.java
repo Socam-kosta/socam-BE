@@ -5,9 +5,9 @@ import lombok.RequiredArgsConstructor;
 import org.example.socam_be.domain.lecture.Lecture;
 import org.example.socam_be.domain.lecture.LectureStatus;
 
-import org.example.socam_be.dto.org.LectureDetailDto;
-import org.example.socam_be.dto.org.LectureRequestDto;
-import org.example.socam_be.dto.org.LectureResponseDto;
+import org.example.socam_be.dto.lecture.LectureDetailDto;
+import org.example.socam_be.dto.org.OrgLectureRequestDto;
+import org.example.socam_be.dto.lecture.LectureResponseDto;
 import org.example.socam_be.repository.LectureRepository;
 import org.example.socam_be.repository.OrgRepository;
 import org.springframework.stereotype.Service;
@@ -23,7 +23,7 @@ public class OrgLectureService {
     private final OrgRepository orgRepository;
 
     // 강의 등록
-    public void createLecture(LectureRequestDto dto) {
+    public void createLecture(OrgLectureRequestDto dto) {
 
         // 내용 유효성 검사
         if (dto.getTitle() == null || dto.getTitle().length() < 1 || dto.getTitle().length() > 100) {
@@ -74,6 +74,13 @@ public class OrgLectureService {
                 .map(lecture -> LectureResponseDto.builder()
                         .id(lecture.getId())
                         .title(lecture.getTitle())
+                        .instructor(lecture.getInstructor())
+                        .organization(lecture.getOrganization())
+                        .category(lecture.getCategory())
+                        .method(lecture.getMethod())
+                        .target(lecture.getTarget())
+                        .startDate(lecture.getStartDate())
+                        .endDate(lecture.getEndDate())
                         .status(lecture.getStatus())
                         .build())
                 .toList();
@@ -100,7 +107,7 @@ public class OrgLectureService {
 
     // 강의 수정
     @Transactional
-    public void updateLecture(Long lectureId, LectureRequestDto dto) {
+    public void updateLecture(Long lectureId, OrgLectureRequestDto dto) {
         Lecture lecture = lectureRepository.findById(lectureId)
                 .orElseThrow(() -> new IllegalArgumentException("강의를 찾을 수 없습니다."));
 

@@ -17,6 +17,9 @@ public interface LectureRepository extends JpaRepository<Lecture, Long> {
     // 이메일과 상태 기반으로 조회
     List<Lecture> findByEmailAndStatus(String email, LectureStatus status);
 
+    // 분류별 강의 조회
+    List<Lecture> findByTargetAndMethodAndCategoryAndStatus(String target, String method, String category, LectureStatus status);
+
     // 관리자: 강의 상세 조회/승인/거절 처리 시 필요
     Optional<Lecture> findById(Long id);
 }
