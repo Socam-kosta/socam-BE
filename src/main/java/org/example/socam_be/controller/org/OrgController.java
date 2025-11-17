@@ -58,7 +58,7 @@ public class OrgController {
             summary = "운영기관 정보 수정",
             description = "운영기관 이름, 연락처, 비밀번호, 증명서 경로 등을 수정합니다."
     )
-    @PutMapping("/{email}")
+    @PutMapping("/me/{email}")
     public ResponseEntity<OrgResponseDto> updateOrg(
             @PathVariable String email,
             @RequestBody OrgUpdateInfoReqDto dto
@@ -71,7 +71,7 @@ public class OrgController {
             summary = "운영기관 탈퇴",
             description = "운영기관 계정을 삭제합니다."
     )
-    @DeleteMapping("/{email}")
+    @DeleteMapping("/delete/{email}")
     public ResponseEntity<Void> deleteOrg(@PathVariable String email) {
         orgService.deleteOrg(email);
         return ResponseEntity.noContent().build();
