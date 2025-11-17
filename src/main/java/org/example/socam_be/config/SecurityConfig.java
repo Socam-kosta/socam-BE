@@ -43,7 +43,6 @@ public class SecurityConfig {
                                 "/api/auth/**",
 
                                 // 운영기관 비인증 접근 허용
-                                "/api/users/**",
                                 "/api/org/register",
                                 "/api/org/login",
                                 "/api/org/password-reset-request",
