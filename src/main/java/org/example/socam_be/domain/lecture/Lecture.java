@@ -7,8 +7,7 @@ import java.time.LocalDate;
 
 @Entity
 @Table(name = "lecture")
-@Getter
-@Setter
+@Getter @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -48,4 +47,34 @@ public class Lecture {
 
     @Enumerated(EnumType.STRING)
     private LectureStatus status; //상태(PENDING, APPROVED, REJECTED)
+
+
+    /* -------------------------
+     * 신규 추가 필드
+     * ------------------------- */
+
+    @Column(length = 50)
+    private String region;   // 지역
+
+    private Boolean needCard;  // 내일배움카드 필요 여부
+
+    //추후에 기능 고도화 시 추가 예정
+//    @Column(length = 255)
+//    private String ncs;        // 훈련핵심과목 (nullable)
+
+    private Integer tuition;   // 수강료
+
+    private Boolean supportAvailable; // 훈련지원금 여부
+
+    @Column(columnDefinition = "TEXT")
+    private String applicationProcess; // 지원절차
+
+    @Column(columnDefinition = "TEXT")
+    private String eligibility;        // 자격요건
+
+    @Column(columnDefinition = "TEXT")
+    private String employmentSupport;  // 채용 연계 여부 등
+
+    @Column(columnDefinition = "TEXT")
+    private String curriculum;         // 커리큘럼
 }

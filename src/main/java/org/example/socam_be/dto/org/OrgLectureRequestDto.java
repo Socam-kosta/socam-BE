@@ -5,8 +5,7 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 
-@Getter
-@Setter
+@Getter @Setter
 public class OrgLectureRequestDto {
 
     private String email;
@@ -19,4 +18,13 @@ public class OrgLectureRequestDto {
     private LocalDate endDate;
     private String description;
 
+    private String region;
+    private Boolean needCard;
+//    private String ncs;
+    private Integer tuition;
+    private Boolean supportAvailable;
+    private String applicationProcess;
+    private String eligibility;
+    private String employmentSupport;
+    private String curriculum;
 }

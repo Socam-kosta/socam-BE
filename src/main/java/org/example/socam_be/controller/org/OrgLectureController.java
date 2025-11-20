@@ -24,14 +24,13 @@ public class OrgLectureController {
 
     /**
      * 강의 등록
-     * JWT에서 자동으로 email을 가져와 사용함
      */
     @PostMapping("/add")
     public ResponseEntity<String> addLecture(
             @RequestAttribute("email") String email,
             @RequestBody OrgLectureRequestDto dto
     ) {
-        dto.setEmail(email); // 본인 email 적용
+        dto.setEmail(email);
         orgLectureService.createLecture(dto);
 
         return ResponseEntity.ok("강의 등록 완료 (승인 대기)");
@@ -39,33 +38,33 @@ public class OrgLectureController {
 
     /**
      * 운영기관 본인이 등록한 강의 목록 조회
-     * PathVariable email 제거 → JWT email 사용
+     * ex) /api/org/lecture/list?status=PENDING
      */
     @GetMapping("/list")
     public ResponseEntity<List<LectureResponseDto>> getMyLectures(
             @RequestAttribute("email") String email,
             @RequestParam LectureStatus status
     ) {
-        List<LectureResponseDto> lectures = orgLectureService.getMyLectures(email, status);
-        return ResponseEntity.ok(lectures);
+        return ResponseEntity.ok(
+                orgLectureService.getMyLectures(email, status)
+        );
     }
 
     /**
-     * 강의 상세 조회
-     * (단, 본인 강의인지 검증은 Service에서 수행)
+     * 운영기관 본인의 강의 상세 조회
      */
     @GetMapping("/{lectureId}")
     public ResponseEntity<LectureDetailDto> getLectureDetail(
             @PathVariable Long lectureId,
             @RequestAttribute("email") String email
     ) {
-        LectureDetailDto lecture = orgLectureService.getLectureDetailForOrg(lectureId, email);
-        return ResponseEntity.ok(lecture);
+        return ResponseEntity.ok(
+                orgLectureService.getLectureDetailForOrg(lectureId, email)
+        );
     }
 
     /**
-     * 강의 수정 요청
-     * 본인 강의 아닌 경우 수정 불가
+     * 강의 수정 (승인 완료 → 수정 시 다시 PENDING)
      */
     @PutMapping("/{lectureId}")
     public ResponseEntity<String> updateLecture(
@@ -81,7 +80,7 @@ public class OrgLectureController {
 
     /**
      * 강의 삭제
-     * 본인 강의인지 반드시 확인
+     * 운영기관 본인만 삭제 가능
      */
     @DeleteMapping("/{lectureId}")
     public ResponseEntity<String> deleteLecture(

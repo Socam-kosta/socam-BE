@@ -16,23 +16,29 @@ public class LectureController {
 
     private final LectureService lectureService;
 
-    // 분류별 강의 조회
+    /**
+     * 분류별 강의 조회
+     * 예: /api/lecture/jobseeker/온라인/백엔드
+     */
     @GetMapping("/{target}/{method}/{category}")
     public ResponseEntity<List<LectureResponseDto>> getLectures(
             @PathVariable String target,
             @PathVariable String method,
             @PathVariable String category
     ) {
-        List<LectureResponseDto> lectures = lectureService.getLectures(target, method, category);
-        return ResponseEntity.ok(lectures);
+        return ResponseEntity.ok(
+                lectureService.getLectures(target, method, category)
+        );
     }
 
-    // 강의 상세 조회
-    @GetMapping("/{lectureId}")
+    /**
+     * 강의 상세 조회
+     * (일반 유저와 운영기관 모두 접근 가능)
+     */
+    @GetMapping("/detail/{lectureId}")
     public ResponseEntity<LectureDetailDto> getLectureDetail(
             @PathVariable Long lectureId
     ) {
-        LectureDetailDto lecture = lectureService.getLectureDetail(lectureId);
-        return ResponseEntity.ok(lecture);
+        return ResponseEntity.ok(lectureService.getLectureDetail(lectureId));
     }
 }
