@@ -16,9 +16,17 @@ public class LectureService {
 
     private final LectureRepository lectureRepository;
 
-    // 분류별 강의 조회
+    /**
+     * -----------------------------------------------
+     *  승인된 강의 리스트 조회 (간략 정보)
+     * -----------------------------------------------
+     */
     public List<LectureResponseDto> getLectures(String target, String method, String category) {
-        List<Lecture> lectures = lectureRepository.findByTargetAndMethodAndCategoryAndStatus(target, method, category, LectureStatus.APPROVED);
+
+        List<Lecture> lectures =
+                lectureRepository.findByTargetAndMethodAndCategoryAndStatus(
+                        target, method, category, LectureStatus.APPROVED
+                );
 
         return lectures.stream()
                 .map(lecture -> LectureResponseDto.builder()
@@ -36,8 +44,13 @@ public class LectureService {
                 .toList();
     }
 
-    // 강의 상세 조회
+    /**
+     * -----------------------------------------------
+     *  강의 상세 조회 (전체 정보)
+     * -----------------------------------------------
+     */
     public LectureDetailDto getLectureDetail(Long lectureId) {
+
         Lecture lecture = lectureRepository.findById(lectureId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 강의를 찾을 수 없습니다."));
 
@@ -52,6 +65,18 @@ public class LectureService {
                 .endDate(lecture.getEndDate())
                 .description(lecture.getDescription())
                 .status(lecture.getStatus())
+
+                // ⭐ 신규 필드 매핑
+                .region(lecture.getRegion())
+                .needCard(lecture.getNeedCard())
+//                .ncs(lecture.getNcs())
+                .tuition(lecture.getTuition())
+                .supportAvailable(lecture.getSupportAvailable())
+                .applicationProcess(lecture.getApplicationProcess())
+                .eligibility(lecture.getEligibility())
+                .employmentSupport(lecture.getEmploymentSupport())
+                .curriculum(lecture.getCurriculum())
+
                 .build();
     }
 }

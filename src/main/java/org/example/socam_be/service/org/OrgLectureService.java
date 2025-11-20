@@ -39,6 +39,18 @@ public class OrgLectureService {
                 .endDate(dto.getEndDate())
                 .description(dto.getDescription())
                 .status(LectureStatus.PENDING)
+
+                // 신규 필드 매핑
+                .region(dto.getRegion())
+                .needCard(dto.getNeedCard())
+//                .ncs(dto.getNcs())
+                .tuition(dto.getTuition())
+                .supportAvailable(dto.getSupportAvailable())
+                .applicationProcess(dto.getApplicationProcess())
+                .eligibility(dto.getEligibility())
+                .employmentSupport(dto.getEmploymentSupport())
+                .curriculum(dto.getCurriculum())
+
                 .build();
 
         lectureRepository.save(lecture);
@@ -67,13 +79,12 @@ public class OrgLectureService {
     }
 
     /** ------------------------------
-     *  강의 상세 조회 (운영기관 전용)
+     *  강의 상세 조회(운영기관 전용)
      * ------------------------------ */
     public LectureDetailDto getLectureDetailForOrg(Long lectureId, String email) {
         Lecture lecture = lectureRepository.findById(lectureId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 강의를 찾을 수 없습니다."));
 
-        // 본인 강의인지 체크
         if (!lecture.getEmail().equals(email)) {
             throw new IllegalArgumentException("본인의 강의만 조회할 수 있습니다.");
         }
@@ -89,6 +100,17 @@ public class OrgLectureService {
                 .endDate(lecture.getEndDate())
                 .description(lecture.getDescription())
                 .status(lecture.getStatus())
+
+                .region(lecture.getRegion())
+                .needCard(lecture.getNeedCard())
+//                .ncs(lecture.getNcs())
+                .tuition(lecture.getTuition())
+                .supportAvailable(lecture.getSupportAvailable())
+                .applicationProcess(lecture.getApplicationProcess())
+                .eligibility(lecture.getEligibility())
+                .employmentSupport(lecture.getEmploymentSupport())
+                .curriculum(lecture.getCurriculum())
+
                 .build();
     }
 
@@ -101,20 +123,16 @@ public class OrgLectureService {
         Lecture lecture = lectureRepository.findById(lectureId)
                 .orElseThrow(() -> new IllegalArgumentException("강의를 찾을 수 없습니다."));
 
-        // 본인 여부 체크
         if (!lecture.getEmail().equals(dto.getEmail())) {
             throw new IllegalArgumentException("본인이 등록한 강의만 수정할 수 있습니다.");
         }
 
-        // 승인 대기중(PENDING)은 수정 불가
         if (lecture.getStatus() == LectureStatus.PENDING) {
             throw new IllegalArgumentException("승인 대기중인 강의는 수정할 수 없습니다.");
         }
 
-        // 유효성 검사
         validateLectureInput(dto);
 
-        // 수정
         lecture.setTitle(dto.getTitle());
         lecture.setInstructor(dto.getInstructor());
         lecture.setCategory(dto.getCategory());
@@ -124,7 +142,17 @@ public class OrgLectureService {
         lecture.setEndDate(dto.getEndDate());
         lecture.setDescription(dto.getDescription());
 
-        // 관리자 승인 다시 필요
+        // 신규 필드 수정 적용
+        lecture.setRegion(dto.getRegion());
+        lecture.setNeedCard(dto.getNeedCard());
+//        lecture.setNcs(dto.getNcs());
+        lecture.setTuition(dto.getTuition());
+        lecture.setSupportAvailable(dto.getSupportAvailable());
+        lecture.setApplicationProcess(dto.getApplicationProcess());
+        lecture.setEligibility(dto.getEligibility());
+        lecture.setEmploymentSupport(dto.getEmploymentSupport());
+        lecture.setCurriculum(dto.getCurriculum());
+
         lecture.setStatus(LectureStatus.PENDING);
     }
 
@@ -143,7 +171,7 @@ public class OrgLectureService {
     }
 
     /** ------------------------------
-     *  공통: 입력값 유효성 검사
+     *  유효성 검사
      * ------------------------------ */
     private void validateLectureInput(OrgLectureRequestDto dto) {
 
