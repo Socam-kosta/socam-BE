@@ -18,7 +18,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Map;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -52,15 +55,41 @@ public class OrgService {
             throw new IllegalArgumentException("재직증명서 파일을 업로드해야 합니다.");
         }
 
-        // ⭐ S3 업로드 수행
-        String certificateUrl = fileService.uploadCertificate(certFile);
+        // 파일 크기 제한 (5MB)
+        if (certFile.getSize() > 5 * 1024 * 1024) {
+            throw new IllegalArgumentException("파일 크기는 최대 5MB까지 가능합니다.");
+        }
+
+        // 확장자 검사
+        String originalName = certFile.getOriginalFilename();
+        if (originalName == null ||
+                !originalName.toLowerCase().matches(".*\\.(pdf|jpg|jpeg|png)$")) {
+            throw new IllegalArgumentException("허용되지 않는 파일 형식입니다. (pdf, jpg, jpeg, png)");
+        }
+
+        // MIME 타입 검사
+        String contentType = certFile.getContentType();
+        if (contentType == null ||
+                !(contentType.equals("application/pdf") ||
+                        contentType.equals("image/jpeg") ||
+                        contentType.equals("image/png"))) {
+            throw new IllegalArgumentException("허용되지 않는 MIME 형식입니다.");
+        }
+
+        // S3 업로드
+        String certificateUrl;
+        try {
+            certificateUrl = fileService.uploadOrgCertificate(certFile);
+        } catch (Exception e) {
+            throw new RuntimeException("S3 업로드 실패: " + e.getMessage());
+        }
 
         Org org = Org.builder()
                 .email(dto.getEmail())
                 .password(passwordEncoder.encode(dto.getPassword()))
                 .orgName(dto.getOrgName())
                 .contact(dto.getContact())
-                .certificatePath(certificateUrl)    // ⭐ S3 URL 저장
+                .certificatePath(certificateUrl)
                 .status(OrgStatus.PENDING)
                 .build();
 
