@@ -60,7 +60,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
                 // JWT에서 이메일과 역할 파싱
                 String email = JwtUtils.getEmailFromToken(rawToken);
-                String role = JwtUtils.getRoleFromToken(rawToken);   // ⭐ ROLE 파싱
+                String role = JwtUtils.getRoleFromToken(rawToken);
 
                 if (email != null) {
                     request.setAttribute("email", email); // 컨트롤러에서 사용 가능
@@ -75,6 +75,7 @@ public class JwtFilter extends OncePerRequestFilter {
                     } else if ("ADMIN".equalsIgnoreCase(role)) {
                         authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
                     } else {
+                        // USER 또는 null인 경우 모두 ROLE_USER로 설정
                         authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
                     }
 
@@ -89,6 +90,8 @@ public class JwtFilter extends OncePerRequestFilter {
                 }
 
             } catch (JwtException | IllegalArgumentException e) {
+                // 토큰 파싱 실패 시 로그 출력
+                System.err.println("JWT 토큰 파싱 실패: " + e.getMessage());
                 SecurityContextHolder.clearContext();
             }
         }

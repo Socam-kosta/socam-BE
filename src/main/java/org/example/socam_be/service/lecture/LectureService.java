@@ -18,6 +18,33 @@ public class LectureService {
 
     /**
      * -----------------------------------------------
+     *  승인된 모든 강의 리스트 조회 (간략 정보)
+     *  메인 페이지 등에서 사용
+     * -----------------------------------------------
+     */
+    public List<LectureResponseDto> getAllApprovedLectures() {
+        List<Lecture> lectures =
+                lectureRepository.findByStatus(LectureStatus.APPROVED);
+
+        return lectures.stream()
+                .map(lecture -> LectureResponseDto.builder()
+                        .id(lecture.getId())
+                        .title(lecture.getTitle())
+                        .instructor(lecture.getInstructor())
+                        .organization(lecture.getOrganization())
+                        .category(lecture.getCategory())
+                        .method(lecture.getMethod())
+                        .target(lecture.getTarget())
+                        .startDate(lecture.getStartDate())
+                        .endDate(lecture.getEndDate())
+                        .status(lecture.getStatus())
+                        .imageUrl(lecture.getImageUrl()) //강의 이미지 url 추가
+                        .build())
+                .toList();
+    }
+
+    /**
+     * -----------------------------------------------
      *  승인된 강의 리스트 조회 (간략 정보)
      * -----------------------------------------------
      */
