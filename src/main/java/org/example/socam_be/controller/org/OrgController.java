@@ -10,6 +10,7 @@ import org.example.socam_be.service.org.OrgService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Map;
 
@@ -28,8 +29,12 @@ public class OrgController {
             summary = "운영기관 회원가입",
             description = "운영기관이 이메일/비밀번호/기관명/연락처/증명서 경로를 입력하여 회원가입합니다."
     )
-    @PostMapping("/register")
-    public ResponseEntity<OrgResponseDto> register(@RequestBody OrgRegisterRequestDto dto) {
+    @PostMapping(value = "/register", consumes = {"multipart/form-data"})
+    public ResponseEntity<OrgResponseDto> register(
+            @RequestPart("data") OrgRegisterRequestDto dto,
+            @RequestPart("certificateFile") MultipartFile certificateFile
+    ) {
+        dto.setCertificateFile(certificateFile);
         return ResponseEntity.ok(orgService.registerOrg(dto));
     }
 

@@ -11,10 +11,12 @@ import org.example.socam_be.dto.org.OrgResponseDto;
 import org.example.socam_be.exception.CustomAuthException;
 import org.example.socam_be.exception.ErrorCode;
 import org.example.socam_be.repository.OrgRepository;
+import org.example.socam_be.service.FileService;
 import org.example.socam_be.service.user.MailService;
 import org.example.socam_be.util.JwtUtils;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Map;
 
@@ -25,6 +27,7 @@ public class OrgService {
     private final OrgRepository orgRepository;
     private final PasswordEncoder passwordEncoder;
     private final MailService mailService;
+    private final FileService fileService;
 
     /** 운영기관 정보 조회 */
     public Org findByEmail(String email) {
@@ -44,12 +47,20 @@ public class OrgService {
             throw new IllegalArgumentException("이미 등록된 운영기관 이메일입니다.");
         }
 
+        MultipartFile certFile = dto.getCertificateFile();
+        if (certFile == null || certFile.isEmpty()) {
+            throw new IllegalArgumentException("재직증명서 파일을 업로드해야 합니다.");
+        }
+
+        // ⭐ S3 업로드 수행
+        String certificateUrl = fileService.uploadCertificate(certFile);
+
         Org org = Org.builder()
                 .email(dto.getEmail())
                 .password(passwordEncoder.encode(dto.getPassword()))
                 .orgName(dto.getOrgName())
                 .contact(dto.getContact())
-                .certificatePath(dto.getCertificatePath())
+                .certificatePath(certificateUrl)    // ⭐ S3 URL 저장
                 .status(OrgStatus.PENDING)
                 .build();
 
@@ -106,7 +117,7 @@ public class OrgService {
 
         org.setOrgName(dto.getOrgName());
         org.setContact(dto.getContact());
-        org.setCertificatePath(dto.getCertificatePath());
+        org.setCertificatePath(dto.getCertificatePath());  // 🔥 여기도 향후 업로드로 변경 가능
 
         if (dto.getPassword() != null && !dto.getPassword().isBlank()) {
             org.setPassword(passwordEncoder.encode(dto.getPassword()));

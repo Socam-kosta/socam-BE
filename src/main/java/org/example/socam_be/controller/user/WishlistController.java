@@ -1,11 +1,11 @@
-package org.example.socam_be.controller;
+package org.example.socam_be.controller.user;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.example.socam_be.domain.wishlist.Wishlist;
-import org.example.socam_be.service.WishlistService;
+import org.example.socam_be.service.user.WishlistService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
