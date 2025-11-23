@@ -35,11 +35,23 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         // 완전 오픈
                         .requestMatchers(
+                                // 일반 유저
+                                "/api/users/register",
+                                "/api/users/login",
+
+                                // 토큰 재발급
                                 "/api/auth/**",
-                                "/api/users/**",
+
+                                // 운영기관 비인증 접근 허용
                                 "/api/org/register",
                                 "/api/org/login",
+                                "/api/org/password-reset-request",
+                                "/api/org/reset-password",
+
+                                // 관리자 로그인
                                 "/api/admin/login",
+
+                                // swagger
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
                                 "/v3/api-docs.yaml"
@@ -58,7 +70,6 @@ public class SecurityConfig {
                         // 그 외 전체 인증 필요
                         .anyRequest().authenticated()
                 )
-
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .exceptionHandling(ex -> ex.authenticationEntryPoint((req, res, excep) -> {

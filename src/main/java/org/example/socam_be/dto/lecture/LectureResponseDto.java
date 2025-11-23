@@ -1,13 +1,15 @@
-package org.example.socam_be.dto.org;
+package org.example.socam_be.dto.lecture;
 
 import lombok.Builder;
 import lombok.Getter;
+import org.example.socam_be.domain.lecture.LectureStatus;
 
 import java.time.LocalDate;
 
 @Getter
 @Builder
-public class LectureDetailDto {
+public class LectureResponseDto {
+    private Long id; // 강의 식별자
     private String title; // 강의명
     private String instructor; // 강사명
     private String organization; // 기관명
@@ -16,5 +18,5 @@ public class LectureDetailDto {
     private String target; // 재직자 / 취준생 등
     private LocalDate startDate; // 개강일
     private LocalDate endDate; // 종강일
-    private String description; // 간단 설명
+    private LectureStatus status; // 상태(PENDING, APPROVED, REJECTED)
 }
