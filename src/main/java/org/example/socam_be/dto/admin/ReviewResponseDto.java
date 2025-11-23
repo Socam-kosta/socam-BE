@@ -21,7 +21,7 @@ public class ReviewResponseDto {
     private String filepath;
     private int starRating;
     private String contents;
-    private boolean isChecked;
+    private Boolean isChecked;
     private String status;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
@@ -35,7 +35,7 @@ public class ReviewResponseDto {
         this.filepath = review.getFilepath();
         this.starRating = review.getStarRating();
         this.contents = review.getContents();
-        this.isChecked = review.isChecked();
+        this.isChecked = review.getIsChecked() != null ? review.getIsChecked() : false;
         this.status = review.getStatus().name();
         this.createdAt = review.getCreatedAt();
         this.updatedAt = review.getUpdatedAt();
