@@ -61,6 +61,8 @@ public class UserService {
         user.setNickname(dto.getNickname());
         user.setPassword(encodedPassword);
         user.setRole(role);
+        user.setIsApproved(true); // 학생 회원가입은 자동 승인
+        user.setLocked(false); // 계정 잠금 여부
 
         return new UserResDto(userRepository.saveAndFlush(user));
     }
