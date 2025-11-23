@@ -37,3 +37,11 @@ out/
 .vscode/
 
 application.yml
+
+# SOCAM-BE docs ignore
+01_OVERVIEW.md
+02_DATABASE_STRUCTURE.md
+03_API_ENDPOINTS.md
+04_DTO_TYPES.md
+05_AUTH_SECURITY.md
+06_BUSINESS_LOGIC.md
