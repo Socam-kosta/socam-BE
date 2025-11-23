@@ -1,4 +1,4 @@
-package org.example.socam_be.service;
+package org.example.socam_be.service.user;
 
 import lombok.RequiredArgsConstructor;
 import org.example.socam_be.domain.review.Review;
@@ -7,6 +7,8 @@ import org.example.socam_be.dto.CertificateExtractDto;
 import org.example.socam_be.dto.user.ReviewRequestDto;
 import org.example.socam_be.dto.user.ReviewResponseDto;
 import org.example.socam_be.repository.ReviewRepository;
+import org.example.socam_be.service.CertificateValidationService;
+import org.example.socam_be.service.OcrService;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 

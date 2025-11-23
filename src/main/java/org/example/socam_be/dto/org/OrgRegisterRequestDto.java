@@ -3,6 +3,7 @@ package org.example.socam_be.dto.org;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.web.multipart.MultipartFile;
 
 @Getter
 @Setter
@@ -20,6 +21,6 @@ public class OrgRegisterRequestDto {
     @Schema(description = "기관 연락처", example = "010-1234-5678")
     private String contact;
 
-    @Schema(description = "증명서 파일 경로", example = "/uploads/cert/org001.pdf")
-    private String certificatePath;
+    @Schema(description = "재직증명서 파일", example = "/uploads/cert/org001.pdf")
+    private MultipartFile certificateFile;
 }
