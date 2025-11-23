@@ -84,6 +84,12 @@ public class SecurityConfig {
                                 // 이미지 업로드 ←
                                 "/api/image/upload",
 
+                                // 강의 조회 (공개 API)
+                                "/api/lecture/**",
+
+                                // 리뷰 조회 (공개 API - 강의별 리뷰 조회만)
+                                "/api/review/lecture/**",
+
                                 // swagger
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
@@ -103,6 +109,9 @@ public class SecurityConfig {
                         .requestMatchers("/api/org/lecture/**").hasRole("ORG")
                         .requestMatchers("/api/org/me").hasRole("ORG")
                         .requestMatchers("/api/org/delete/**").hasRole("ORG")
+
+                        // 사용자 찜하기 기능 (USER 권한 필요)
+                        .requestMatchers("/api/wishlist/**").hasRole("USER")
 
                         // 그 외 전체 인증 필요
                         .anyRequest().authenticated()
