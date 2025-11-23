@@ -32,11 +32,19 @@ public class User {
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
+    @Column(nullable = false)
+    private Boolean isApproved = false;
+
+    @Column(nullable = false)
+    private Boolean locked = false;
+
+
     public User(String email, String name, String password) {
         this.email = email;
         this.name = name;
         this.password = password;
         this.role = Role.USER;
+        this.isApproved = false;
     }
 
     public boolean isAdmin() {

@@ -2,6 +2,7 @@ package org.example.socam_be.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.example.socam_be.service.S3Uploader;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,9 +19,15 @@ public class ImageController {
 
     private final S3Uploader s3Uploader;
 
-    @PostMapping("/upload")
-    public ResponseEntity<String> upload(@RequestPart MultipartFile file) throws IOException {
+    @PostMapping(
+            value = "/upload",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE
+    )
+    public ResponseEntity<String> upload(
+            @RequestPart("file") MultipartFile file
+    ) throws IOException {
         String url = s3Uploader.upload(file, "uploads");
         return ResponseEntity.ok(url);
     }
+
 }

@@ -48,6 +48,23 @@ public class OrgController {
         return ResponseEntity.ok(orgService.login(dto));
     }
 
+    /** 운영기관 이메일 중복 확인 */
+    @Operation(
+            summary = "운영기관 이메일 중복 확인",
+            description = "회원가입 전 운영기관 이메일 중복 여부를 확인합니다."
+    )
+    @GetMapping("/check-email")
+    public ResponseEntity<Map<String, Object>> checkEmail(
+            @io.swagger.v3.oas.annotations.Parameter(description = "확인할 이메일") @RequestParam String email
+    ) {
+        boolean isDuplicate = orgService.isEmailDuplicate(email);
+        return ResponseEntity.ok(Map.of(
+                "email", email,
+                "available", !isDuplicate,
+                "message", isDuplicate ? "이미 사용 중인 이메일입니다." : "사용 가능한 이메일입니다."
+        ));
+    }
+
     /** 운영기관 내 정보 조회 */
     @Operation(
             summary = "운영기관 내 정보 조회",

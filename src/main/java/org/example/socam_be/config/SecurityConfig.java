@@ -38,18 +38,25 @@ public class SecurityConfig {
                                 // 일반 유저
                                 "/api/users/register",
                                 "/api/users/login",
+                                "/api/users/check-email",
+                                "/api/users/check-nickname",
 
                                 // 토큰 재발급
                                 "/api/auth/**",
 
                                 // 운영기관 비인증 접근 허용
                                 "/api/org/register",
+                                "/api/org/register/**",
                                 "/api/org/login",
+                                "/api/org/check-email",
                                 "/api/org/password-reset-request",
                                 "/api/org/reset-password",
 
                                 // 관리자 로그인
                                 "/api/admin/login",
+
+                                // 이미지 업로드 ←
+                                "/api/image/upload",
 
                                 // swagger
                                 "/swagger-ui/**",

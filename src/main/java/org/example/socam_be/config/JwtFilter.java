@@ -34,9 +34,12 @@ public class JwtFilter extends OncePerRequestFilter {
         if (path.equals("/api/admin/login") ||
                 path.startsWith("/api/users/register") ||
                 path.startsWith("/api/users/login") ||
+                path.startsWith("/api/users/check-email") ||
+                path.startsWith("/api/users/check-nickname") ||
                 path.startsWith("/api/auth/refresh") ||
                 path.startsWith("/api/org/register") ||
                 path.startsWith("/api/org/login") ||
+                path.startsWith("/api/org/check-email") ||
                 path.startsWith("/api/users/password-reset-request") ||
                 path.startsWith("/api/users/reset-password") ||
                 path.startsWith("/api/org/password-reset-request") ||
