@@ -18,6 +18,7 @@ public class LectureDetailDto {
     private LocalDate startDate;
     private LocalDate endDate;
     private String description;
+    private String imageUrl; //강의 이미지 url 추가
     private LectureStatus status;
 
     private String region;

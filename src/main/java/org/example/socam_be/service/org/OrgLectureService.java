@@ -9,7 +9,9 @@ import org.example.socam_be.dto.org.OrgLectureRequestDto;
 import org.example.socam_be.dto.lecture.LectureResponseDto;
 import org.example.socam_be.repository.LectureRepository;
 import org.example.socam_be.repository.OrgRepository;
+import org.example.socam_be.service.FileService;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -19,13 +21,21 @@ public class OrgLectureService {
 
     private final LectureRepository lectureRepository;
     private final OrgRepository orgRepository;
+    private final FileService fileService;   // ⭐ 추가됨
 
     /** ------------------------------
      *  강의 등록
      * ------------------------------ */
-    public void createLecture(OrgLectureRequestDto dto) {
+    public void createLecture(OrgLectureRequestDto dto, MultipartFile imageFile) {
 
         validateLectureInput(dto);
+
+        // ⭐ 이미지 URL 처리 (우선순위: 업로드 → dto.getImageUrl())
+        String finalImageUrl = dto.getImageUrl();
+
+        if (imageFile != null && !imageFile.isEmpty()) {
+            finalImageUrl = fileService.uploadLectureImage(imageFile);
+        }
 
         Lecture lecture = Lecture.builder()
                 .email(dto.getEmail())
@@ -40,16 +50,17 @@ public class OrgLectureService {
                 .description(dto.getDescription())
                 .status(LectureStatus.PENDING)
 
-                // 신규 필드 매핑
                 .region(dto.getRegion())
                 .needCard(dto.getNeedCard())
-//                .ncs(dto.getNcs())
                 .tuition(dto.getTuition())
                 .supportAvailable(dto.getSupportAvailable())
                 .applicationProcess(dto.getApplicationProcess())
                 .eligibility(dto.getEligibility())
                 .employmentSupport(dto.getEmploymentSupport())
                 .curriculum(dto.getCurriculum())
+
+                // ⭐ 최종 URL 결정
+                .imageUrl(finalImageUrl)
 
                 .build();
 
@@ -103,13 +114,13 @@ public class OrgLectureService {
 
                 .region(lecture.getRegion())
                 .needCard(lecture.getNeedCard())
-//                .ncs(lecture.getNcs())
                 .tuition(lecture.getTuition())
                 .supportAvailable(lecture.getSupportAvailable())
                 .applicationProcess(lecture.getApplicationProcess())
                 .eligibility(lecture.getEligibility())
                 .employmentSupport(lecture.getEmploymentSupport())
                 .curriculum(lecture.getCurriculum())
+                .imageUrl(lecture.getImageUrl())  // ⭐ 이미지 url 추가
 
                 .build();
     }
@@ -142,16 +153,23 @@ public class OrgLectureService {
         lecture.setEndDate(dto.getEndDate());
         lecture.setDescription(dto.getDescription());
 
-        // 신규 필드 수정 적용
         lecture.setRegion(dto.getRegion());
         lecture.setNeedCard(dto.getNeedCard());
-//        lecture.setNcs(dto.getNcs());
         lecture.setTuition(dto.getTuition());
         lecture.setSupportAvailable(dto.getSupportAvailable());
         lecture.setApplicationProcess(dto.getApplicationProcess());
         lecture.setEligibility(dto.getEligibility());
         lecture.setEmploymentSupport(dto.getEmploymentSupport());
         lecture.setCurriculum(dto.getCurriculum());
+
+        // ⭐ 이미지 업데이트 처리
+        MultipartFile imageFile = dto.getImageFile();
+        if (imageFile != null && !imageFile.isEmpty()) {
+            String newUrl = fileService.uploadLectureImage(imageFile);
+            lecture.setImageUrl(newUrl);
+        } else {
+            lecture.setImageUrl(dto.getImageUrl());
+        }
 
         lecture.setStatus(LectureStatus.PENDING);
     }
@@ -171,7 +189,7 @@ public class OrgLectureService {
     }
 
     /** ------------------------------
-     *  유효성 검사
+     *  유효성 검사 (기존 그대로)
      * ------------------------------ */
     private void validateLectureInput(OrgLectureRequestDto dto) {
 
