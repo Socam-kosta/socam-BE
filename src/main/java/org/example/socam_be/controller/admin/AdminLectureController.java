@@ -2,6 +2,7 @@ package org.example.socam_be.controller.admin;
 
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
+import org.example.socam_be.domain.lecture.LectureStatus;
 import org.example.socam_be.dto.admin.LectureAdminDetailResponseDto;
 import org.example.socam_be.dto.admin.LectureAdminListResponseDto;
 import org.example.socam_be.dto.admin.LectureStatusUpdateRequestDto;
@@ -36,6 +37,19 @@ public class AdminLectureController {
     @GetMapping("/pending")
     public List<LectureAdminListResponseDto> getPendingLectures() {
         return adminLectureService.getPendingLectures();
+    }
+
+    // 1-1) 상태별 강의 목록 조회
+    @Operation(
+            summary = "상태별 강의 목록 조회",
+            description = "상태(PENDING, APPROVED, REJECTED)별로 강의를 관리자 권한으로 조회합니다."
+    )
+    @GetMapping("/status/{status}")
+    public List<LectureAdminListResponseDto> getLecturesByStatus(
+            @PathVariable String status
+    ) {
+        LectureStatus lectureStatus = LectureStatus.valueOf(status.toUpperCase());
+        return adminLectureService.getLecturesByStatus(lectureStatus);
     }
 
     // 2) 강의 상세 조회
