@@ -50,7 +50,25 @@ public class AdminNoticeService {
                 .adminEmail(admin.getAdminEmail())
                 .regDate(saved.getRegDate())
                 .status(saved.getStatus().name())
+                .viewCount(saved.getViewCount())
                 .build();
+    }
+
+    // 전체 공지사항 목록 조회
+    public List<NoticeResponseDto> getAllNotices() {
+        List<Notice> notices = noticeRepository.findAll();
+
+        return notices.stream()
+            .map(notice -> NoticeResponseDto.builder()
+                .noticeId(notice.getNoticeId())
+                .adminEmail(notice.getAdmin().getAdminEmail())
+                .title(notice.getTitle())
+                .contents(notice.getContents())
+                .regDate(notice.getRegDate())
+                .status(notice.getStatus().name())
+                .viewCount(notice.getViewCount())
+                .build())
+            .toList();
     }
 
     // 🔸 금지어 필터링
