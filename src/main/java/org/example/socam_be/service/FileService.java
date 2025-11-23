@@ -19,6 +19,14 @@ public class FileService {
             throw new RuntimeException(e);
         }
     }
+    // ⭐ 운영기관 재직증명서 업로드
+    public String uploadOrgCertificate(MultipartFile file) {
+        try {
+            return s3Uploader.upload(file, "org-certificates");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     public String uploadLectureImage(MultipartFile file) {
         try {
