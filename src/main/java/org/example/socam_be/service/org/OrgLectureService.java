@@ -50,6 +50,7 @@ public class OrgLectureService {
                 .eligibility(dto.getEligibility())
                 .employmentSupport(dto.getEmploymentSupport())
                 .curriculum(dto.getCurriculum())
+                .imageUrl(dto.getImageUrl())    // ⭐ 추가 (중요)
 
                 .build();
 
@@ -110,6 +111,7 @@ public class OrgLectureService {
                 .eligibility(lecture.getEligibility())
                 .employmentSupport(lecture.getEmploymentSupport())
                 .curriculum(lecture.getCurriculum())
+                .imageUrl(lecture.getImageUrl()) // 이미지 url 추가
 
                 .build();
     }
@@ -152,6 +154,7 @@ public class OrgLectureService {
         lecture.setEligibility(dto.getEligibility());
         lecture.setEmploymentSupport(dto.getEmploymentSupport());
         lecture.setCurriculum(dto.getCurriculum());
+        lecture.setImageUrl(dto.getImageUrl());   // ⭐ 추가 (중요)
 
         lecture.setStatus(LectureStatus.PENDING);
     }

@@ -19,4 +19,5 @@ public class LectureResponseDto {
     private LocalDate startDate; // 개강일
     private LocalDate endDate; // 종강일
     private LectureStatus status; // 상태(PENDING, APPROVED, REJECTED)
+    private String imageUrl; // 강의 이미지 URL 추가
 }

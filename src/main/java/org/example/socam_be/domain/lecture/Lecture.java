@@ -45,6 +45,9 @@ public class Lecture {
     @Column(length = 255)
     private String description; // 간단 설명
 
+    @Column(name = "image_url", length = 255)
+    private String imageUrl;  // ⭐ 강의 이미지 URL 추가
+
     @Enumerated(EnumType.STRING)
     private LectureStatus status; //상태(PENDING, APPROVED, REJECTED)
 
