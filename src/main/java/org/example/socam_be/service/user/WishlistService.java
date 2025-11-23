@@ -1,4 +1,4 @@
-package org.example.socam_be.service;
+package org.example.socam_be.service.user;
 
 import lombok.RequiredArgsConstructor;
 import org.example.socam_be.domain.user.User;
