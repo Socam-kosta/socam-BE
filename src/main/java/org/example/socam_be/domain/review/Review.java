@@ -35,7 +35,7 @@ public class Review {
     private String contents; // 리뷰내용
 
     @Column(name = "is_checked")
-    private boolean isChecked; // 관리자 검수여부
+    private Boolean isChecked; // 관리자 검수여부
 
     @Enumerated(EnumType.STRING)
     private ReviewStatus status; //상태(PENDING, APPROVED, REJECTED)

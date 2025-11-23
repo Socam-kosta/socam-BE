@@ -65,7 +65,7 @@ public class AdminReviewService {
         }
 
         // 4️⃣ 검수 완료 및 업데이트 시간 변경
-        review.setChecked(true);
+        review.setIsChecked(true);
         review.setUpdatedAt(LocalDateTime.now());
         reviewRepository.save(review);
 
@@ -76,7 +76,7 @@ public class AdminReviewService {
             .lectureId(review.getLectureId())
             .starRating(review.getStarRating())
             .contents(review.getContents())
-            .isChecked(review.isChecked())
+            .isChecked(review.getIsChecked() != null ? review.getIsChecked() : false)
             .status(review.getStatus().name())
             .createdAt(review.getCreatedAt())
             .updatedAt(review.getUpdatedAt())
