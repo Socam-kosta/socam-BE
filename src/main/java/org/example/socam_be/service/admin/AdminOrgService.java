@@ -26,6 +26,24 @@ public class AdminOrgService {
             .toList();
     }
 
+    // 전체 운영기관 목록 조회 (모든 상태 포함)
+    public List<OrgResponseDto> getAllOrgs() {
+        List<Org> orgs = orgRepository.findAll();
+
+        return orgs.stream()
+            .map(OrgResponseDto::new)
+            .toList();
+    }
+
+    // 상태별 운영기관 목록 조회
+    public List<OrgResponseDto> getOrgsByStatus(OrgStatus status) {
+        List<Org> orgs = orgRepository.findByStatus(status);
+
+        return orgs.stream()
+            .map(OrgResponseDto::new)
+            .toList();
+    }
+
     // [ADM003] 운영기관 승인/거부 처리 (PATCH /api/orgs/{email}/status)
     @Transactional
     public OrgResponseDto updateOrgStatus(String email, OrgUpdateRequestDto requestDto) {
