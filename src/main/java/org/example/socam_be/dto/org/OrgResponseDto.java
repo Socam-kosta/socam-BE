@@ -1,24 +1,26 @@
 package org.example.socam_be.dto.org;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import org.example.socam_be.domain.org.Org;
 
-import java.time.LocalDateTime;
-
 @Getter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class OrgResponseDto {
-    private String email;
-    private String orgName;
-    private String contact;
-    private LocalDateTime createdAt;
-    private String status;
-    private String certificatePath;
+
+    @Schema(description = "이메일", example = "org001@test.com")
+    private final String email;
+
+    @Schema(description = "기관명", example = "서울직업교육원")
+    private final String orgName;
+
+    @Schema(description = "기관 연락처", example = "010-1234-5678")
+    private final String contact;
+
+    @Schema(description = "증명서 파일 경로", example = "/uploads/cert/org001.pdf")
+    private final String certificatePath;
+
+    @Schema(description = "승인 상태", example = "PENDING")
+    private final String status;
 
     public OrgResponseDto(Org org) {
         this.email = org.getEmail();

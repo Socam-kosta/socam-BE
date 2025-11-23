@@ -2,85 +2,90 @@ package org.example.socam_be.controller.org;
 
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
-import org.example.socam_be.dto.org.LectureDetailDto;
-import org.example.socam_be.dto.org.LectureRequestDto;
-import org.example.socam_be.dto.org.LectureResponseDto;
+import org.example.socam_be.domain.lecture.LectureStatus;
+import org.example.socam_be.dto.lecture.LectureDetailDto;
+import org.example.socam_be.dto.org.OrgLectureRequestDto;
+import org.example.socam_be.dto.lecture.LectureResponseDto;
 import org.example.socam_be.service.org.OrgLectureService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/orgs/lecture")
+@RequestMapping("/api/org/lecture")
 @RequiredArgsConstructor
 @SecurityRequirement(name = "BearerAuth")
 @PreAuthorize("hasRole('ORG')")
-
 public class OrgLectureController {
 
     private final OrgLectureService orgLectureService;
 
-    // [ORG002] 강의 등록 요청
+    /**
+     * 강의 등록
+     */
     @PostMapping("/add")
     public ResponseEntity<String> addLecture(
-            @RequestPart("email") String email,
-            @RequestPart("title") String title,
-            @RequestPart("instructor") String instructor,
-            @RequestPart("category") String category,
-            @RequestPart("method") String method,
-            @RequestPart("target") String target,
-            @RequestPart("startDate") LocalDate startDate,
-            @RequestPart("endDate") LocalDate endDate,
-            @RequestPart("description") String description
+            @RequestAttribute("email") String email,
+            @RequestBody OrgLectureRequestDto dto
     ) {
-        LectureRequestDto dto = new LectureRequestDto();
         dto.setEmail(email);
-        dto.setTitle(title);
-        dto.setInstructor(instructor);
-        dto.setCategory(category);
-        dto.setMethod(method);
-        dto.setTarget(target);
-        dto.setStartDate(startDate);
-        dto.setEndDate(endDate);
-        dto.setDescription(description);
-
         orgLectureService.createLecture(dto);
+
         return ResponseEntity.ok("강의 등록 완료 (승인 대기)");
     }
 
-    // [ORG002] 등록한 강의 조회
-    @GetMapping("/{email}")
+    /**
+     * 운영기관 본인이 등록한 강의 목록 조회
+     * ex) /api/org/lecture/list?status=PENDING
+     */
+    @GetMapping("/list")
     public ResponseEntity<List<LectureResponseDto>> getMyLectures(
-            @PathVariable String email
+            @RequestAttribute("email") String email,
+            @RequestParam LectureStatus status
     ) {
-        List<LectureResponseDto> lectures = orgLectureService.getMyLectures(email);
-        return ResponseEntity.ok(lectures);
+        return ResponseEntity.ok(
+                orgLectureService.getMyLectures(email, status)
+        );
     }
 
-    // [ORG002] 강의 상세 조회
+    /**
+     * 운영기관 본인의 강의 상세 조회
+     */
     @GetMapping("/{lectureId}")
     public ResponseEntity<LectureDetailDto> getLectureDetail(
-            @PathVariable Long lectureId
+            @PathVariable Long lectureId,
+            @RequestAttribute("email") String email
     ) {
-        LectureDetailDto lecture = orgLectureService.getLectureDetail(lectureId);
-        return ResponseEntity.ok(lecture);
+        return ResponseEntity.ok(
+                orgLectureService.getLectureDetailForOrg(lectureId, email)
+        );
     }
 
-    // [ORG002] 강의 수정 요청
+    /**
+     * 강의 수정 (승인 완료 → 수정 시 다시 PENDING)
+     */
     @PutMapping("/{lectureId}")
-    public ResponseEntity<String> updateLecture(@PathVariable Long lectureId, @RequestBody LectureRequestDto dto) {
+    public ResponseEntity<String> updateLecture(
+            @PathVariable Long lectureId,
+            @RequestAttribute("email") String email,
+            @RequestBody OrgLectureRequestDto dto
+    ) {
+        dto.setEmail(email);
         orgLectureService.updateLecture(lectureId, dto);
+
         return ResponseEntity.ok("강의 수정 완료 (승인 대기)");
     }
 
-    // [ORG002] 강의 삭제
-    @DeleteMapping("/delete/{lectureId}")
+    /**
+     * 강의 삭제
+     * 운영기관 본인만 삭제 가능
+     */
+    @DeleteMapping("/{lectureId}")
     public ResponseEntity<String> deleteLecture(
             @PathVariable Long lectureId,
-            @RequestParam("email") String email
+            @RequestAttribute("email") String email
     ) {
         orgLectureService.deleteLecture(lectureId, email);
         return ResponseEntity.ok("강의가 삭제되었습니다.");
