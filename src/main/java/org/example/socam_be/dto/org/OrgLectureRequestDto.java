@@ -17,6 +17,7 @@ public class OrgLectureRequestDto {
     private LocalDate startDate;
     private LocalDate endDate;
     private String description;
+    private String imageUrl;
 
     private String region;
     private Boolean needCard;
