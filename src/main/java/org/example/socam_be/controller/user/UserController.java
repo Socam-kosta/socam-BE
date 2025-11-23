@@ -37,6 +37,34 @@ public class UserController {
         return ResponseEntity.ok(tokens);
     }
 
+    // ✅ 이메일 중복 확인
+    @Operation(summary = "이메일 중복 확인", description = "회원가입 전 이메일 중복 여부를 확인합니다.")
+    @GetMapping("/check-email")
+    public ResponseEntity<Map<String, Object>> checkEmail(
+            @Parameter(description = "확인할 이메일") @RequestParam String email
+    ) {
+        boolean isDuplicate = userService.isEmailDuplicate(email);
+        return ResponseEntity.ok(Map.of(
+                "email", email,
+                "available", !isDuplicate,
+                "message", isDuplicate ? "이미 사용 중인 이메일입니다." : "사용 가능한 이메일입니다."
+        ));
+    }
+
+    // ✅ 닉네임 중복 확인
+    @Operation(summary = "닉네임 중복 확인", description = "회원가입 전 닉네임 중복 여부를 확인합니다.")
+    @GetMapping("/check-nickname")
+    public ResponseEntity<Map<String, Object>> checkNickname(
+            @Parameter(description = "확인할 닉네임") @RequestParam String nickname
+    ) {
+        boolean isDuplicate = userService.isNicknameDuplicate(nickname);
+        return ResponseEntity.ok(Map.of(
+                "nickname", nickname,
+                "available", !isDuplicate,
+                "message", isDuplicate ? "이미 사용 중인 닉네임입니다." : "사용 가능한 닉네임입니다."
+        ));
+    }
+
     // ✔ 내 정보 조회
     @Operation(summary = "내 정보 조회", description = "JWT 토큰 기반으로 로그인한 사용자의 정보를 조회합니다.")
     @GetMapping("/me")

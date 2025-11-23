@@ -2,13 +2,10 @@ package org.example.socam_be.controller.org;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
-import org.example.socam_be.domain.org.Org;
 import org.example.socam_be.dto.org.*;
 import org.example.socam_be.service.org.OrgService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -18,7 +15,6 @@ import java.util.Map;
 @RequiredArgsConstructor
 @RequestMapping("/api/org")
 @Tag(name = "운영기관 API", description = "운영기관 회원가입, 로그인, 정보조회 기능 제공")
-@SecurityRequirement(name = "BearerAuth")
 
 public class OrgController {
 
@@ -29,12 +25,21 @@ public class OrgController {
             summary = "운영기관 회원가입",
             description = "운영기관이 이메일/비밀번호/기관명/연락처/증명서 경로를 입력하여 회원가입합니다."
     )
-    @PostMapping(value = "/register", consumes = {"multipart/form-data"})
+    @PostMapping(value = "/register", consumes = "multipart/form-data")
     public ResponseEntity<OrgResponseDto> register(
-            @RequestPart("data") OrgRegisterRequestDto dto,
+            @RequestPart("email") String email,
+            @RequestPart("password") String password,
+            @RequestPart("orgName") String orgName,
+            @RequestPart("contact") String contact,
             @RequestPart("certificateFile") MultipartFile certificateFile
     ) {
+        OrgRegisterRequestDto dto = new OrgRegisterRequestDto();
+        dto.setEmail(email);
+        dto.setPassword(password);
+        dto.setOrgName(orgName);
+        dto.setContact(contact);
         dto.setCertificateFile(certificateFile);
+
         return ResponseEntity.ok(orgService.registerOrg(dto));
     }
 
@@ -46,6 +51,23 @@ public class OrgController {
     @PostMapping("/login")
     public ResponseEntity<Map<String, String>> login(@RequestBody OrgLoginRequestDto dto) {
         return ResponseEntity.ok(orgService.login(dto));
+    }
+
+    /** 운영기관 이메일 중복 확인 */
+    @Operation(
+            summary = "운영기관 이메일 중복 확인",
+            description = "회원가입 전 운영기관 이메일 중복 여부를 확인합니다."
+    )
+    @GetMapping("/check-email")
+    public ResponseEntity<Map<String, Object>> checkEmail(
+            @io.swagger.v3.oas.annotations.Parameter(description = "확인할 이메일") @RequestParam String email
+    ) {
+        boolean isDuplicate = orgService.isEmailDuplicate(email);
+        return ResponseEntity.ok(Map.of(
+                "email", email,
+                "available", !isDuplicate,
+                "message", isDuplicate ? "이미 사용 중인 이메일입니다." : "사용 가능한 이메일입니다."
+        ));
     }
 
     /** 운영기관 내 정보 조회 */

@@ -21,6 +21,20 @@ public class S3Config {
     @Value("${cloud.aws.region.static}")
     private String region;
 
+    // 1) S3Client (파일 업로드용)
+    @Bean
+    public S3Client s3Client() {
+        return S3Client.builder()
+                .region(Region.of(region))
+                .credentialsProvider(
+                        StaticCredentialsProvider.create(
+                                AwsBasicCredentials.create(accessKey, secretKey)
+                        )
+                )
+                .build();
+    }
+
+    // 2) S3Presigner (presigned URL 생성용)
     @Bean
     public S3Presigner s3Presigner() {
         return S3Presigner.builder()
