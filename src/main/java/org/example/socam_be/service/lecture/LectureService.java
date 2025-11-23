@@ -40,6 +40,7 @@ public class LectureService {
                         .startDate(lecture.getStartDate())
                         .endDate(lecture.getEndDate())
                         .status(lecture.getStatus())
+                        .imageUrl(lecture.getImageUrl()) //강의 이미지 url 추가
                         .build())
                 .toList();
     }
@@ -53,7 +54,6 @@ public class LectureService {
 
         Lecture lecture = lectureRepository.findById(lectureId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 강의를 찾을 수 없습니다."));
-
         return LectureDetailDto.builder()
                 .title(lecture.getTitle())
                 .instructor(lecture.getInstructor())
@@ -64,6 +64,7 @@ public class LectureService {
                 .startDate(lecture.getStartDate())
                 .endDate(lecture.getEndDate())
                 .description(lecture.getDescription())
+                .imageUrl(lecture.getImageUrl()) //이미지 url 추가
                 .status(lecture.getStatus())
 
                 // ⭐ 신규 필드 매핑
