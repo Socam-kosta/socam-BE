@@ -17,4 +17,7 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     // ✅ 강의 상세페이지에서 해당 강의의 모든 리뷰 조회
     List<Review> findByLectureId(String lectureId);
 
+    // ✅ 사용자의 모든 리뷰 삭제 (회원 탈퇴 시 사용)
+    void deleteByEmail(String email);
+
 }
