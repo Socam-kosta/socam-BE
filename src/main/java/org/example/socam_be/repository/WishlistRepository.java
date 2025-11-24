@@ -14,5 +14,7 @@ public interface WishlistRepository extends JpaRepository<Wishlist, Long> {
   Optional<Wishlist> findByUserAndLecture(User user, Lecture lecture); // ✅ 중복 여부 확인용
 
   void deleteByUserAndLecture(User user, Lecture lecture); // ✅ 특정 강의 찜 해제
+
+  void deleteByUser(User user); // ✅ 사용자의 모든 찜 목록 삭제 (회원 탈퇴 시 사용)
 }
 
