@@ -78,11 +78,23 @@ public class SecurityConfig {
 //                                "/api/org/password-reset-request",
 //                                "/api/org/reset-password",
 
+                                // 운영기관 공개 API
+                                "/api/org/public/**",
+
                                 // 관리자 로그인
                                 "/api/admin/login",
 
                                 // 이미지 업로드 ←
                                 "/api/image/upload",
+
+                                // 강의 조회 (공개 API)
+                                "/api/lecture/**",
+
+                                // 리뷰 조회 (공개 API - 강의별 리뷰 조회만)
+                                "/api/review/lecture/**",
+
+                                // 공지사항 조회 (공개 API)
+                                "/api/notices/**",
 
                                 // swagger
                                 "/swagger-ui/**",
@@ -99,10 +111,14 @@ public class SecurityConfig {
                         .requestMatchers("/api/org/check-email").permitAll()
                         .requestMatchers("/api/org/password-reset-request").permitAll()
                         .requestMatchers("/api/org/reset-password").permitAll()
+                        .requestMatchers("/api/org/public/**").permitAll()
 
                         .requestMatchers("/api/org/lecture/**").hasRole("ORG")
                         .requestMatchers("/api/org/me").hasRole("ORG")
                         .requestMatchers("/api/org/delete/**").hasRole("ORG")
+
+                        // 사용자 찜하기 기능 (USER 권한 필요)
+                        .requestMatchers("/api/wishlist/**").hasRole("USER")
 
                         // 그 외 전체 인증 필요
                         .anyRequest().authenticated()

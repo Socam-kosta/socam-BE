@@ -10,7 +10,8 @@ import java.util.Date;
 public class JwtUtils {
   private static final String SECRET = "this-is-a-very-secure-key-that-is-at-least-64-bytes-long-1234567890!";
   private static final Key SECRET_KEY = Keys.hmacShaKeyFor(SECRET.getBytes(StandardCharsets.UTF_8));
-  private static final long ACCESS_TOKEN_EXPIRATION_TIME = 3600000L * 100; // 100시간
+  // private static final long ACCESS_TOKEN_EXPIRATION_TIME = 3600000L * 100; // 100시간
+  private static final long ACCESS_TOKEN_EXPIRATION_TIME = 3600000L ; // 1시간
 
   // ✅ 이메일 기반 Access Token 생성
   public static String generateAccessToken(String email, String role, String name) {
