@@ -11,6 +11,7 @@ import org.example.socam_be.exception.ErrorCode;
 import org.example.socam_be.repository.RefreshTokenRepository;
 import org.example.socam_be.repository.ReviewRepository;
 import org.example.socam_be.repository.UserRepository;
+import org.example.socam_be.repository.WishlistRepository;
 import org.example.socam_be.util.JwtUtils;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -27,6 +28,7 @@ public class UserService {
     private final ReviewRepository reviewRepository;
     private final MailService mailService;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final WishlistRepository wishlistRepository;
 
     public User findByEmail(String email) {
         return userRepository.findByEmail(email)
@@ -122,6 +124,18 @@ public class UserService {
     public void deleteUser(String email) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        
+        // 1. 관련 데이터 먼저 삭제 (Foreign Key 제약 조건 해결)
+        // 찜 목록 삭제
+        wishlistRepository.deleteByUser(user);
+        
+        // 리뷰 삭제
+        reviewRepository.deleteByEmail(email);
+        
+        // 리프레시 토큰 삭제
+        refreshTokenRepository.deleteByUser(user);
+        
+        // 2. 사용자 삭제
         userRepository.delete(user);
     }
 
