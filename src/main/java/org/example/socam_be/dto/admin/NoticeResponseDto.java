@@ -19,4 +19,5 @@ public class NoticeResponseDto {
     private String contents;
     private LocalDateTime regDate;
     private String status;
+    private Integer viewCount;
 }

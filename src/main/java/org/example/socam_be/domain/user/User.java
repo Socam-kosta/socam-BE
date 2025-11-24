@@ -32,11 +32,11 @@ public class User {
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
-//    @Column(nullable = false)
-//    private Boolean isApproved = false;
-//
-//    @Column(nullable = false)
-//    private Boolean locked = false;
+    @Column(name = "is_approved", nullable = false)
+    private Boolean isApproved = true; // 학생 회원가입은 자동 승인
+
+    @Column(name = "locked", nullable = false)
+    private Boolean locked = false; // 계정 잠금 여부
 
 
     public User(String email, String name, String password) {
@@ -44,6 +44,8 @@ public class User {
         this.name = name;
         this.password = password;
         this.role = Role.USER;
+        this.isApproved = true; // 학생 회원가입은 자동 승인
+        this.locked = false; // 계정 잠금 여부
     }
 
     public boolean isAdmin() {

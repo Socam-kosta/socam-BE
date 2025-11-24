@@ -17,6 +17,17 @@ public class LectureController {
     private final LectureService lectureService;
 
     /**
+     * 승인된 모든 강의 조회 (공개 API)
+     * 메인 페이지 등에서 사용
+     */
+    @GetMapping("/all")
+    public ResponseEntity<List<LectureResponseDto>> getAllApprovedLectures() {
+        return ResponseEntity.ok(
+                lectureService.getAllApprovedLectures()
+        );
+    }
+
+    /**
      * 분류별 강의 조회
      * 예: /api/lecture/jobseeker/온라인/백엔드
      */

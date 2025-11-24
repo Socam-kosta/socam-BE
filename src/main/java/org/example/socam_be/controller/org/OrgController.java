@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -130,5 +131,15 @@ public class OrgController {
         orgService.resetPassword(token, newPassword, confirmPassword);
 
         return ResponseEntity.ok(Map.of("message", "비밀번호가 성공적으로 변경되었습니다."));
+    }
+
+    /** 승인된 운영기관 목록 조회 (공개 API) */
+    @Operation(
+            summary = "승인된 운영기관 목록 조회",
+            description = "일반 사용자가 볼 수 있는 승인된 운영기관 목록을 조회합니다."
+    )
+    @GetMapping("/public/list")
+    public ResponseEntity<List<OrgResponseDto>> getApprovedOrgs() {
+        return ResponseEntity.ok(orgService.getApprovedOrgs());
     }
 }

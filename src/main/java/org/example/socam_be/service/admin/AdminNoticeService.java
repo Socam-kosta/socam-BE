@@ -50,7 +50,110 @@ public class AdminNoticeService {
                 .adminEmail(admin.getAdminEmail())
                 .regDate(saved.getRegDate())
                 .status(saved.getStatus().name())
+                .viewCount(saved.getViewCount())
                 .build();
+    }
+
+    // 전체 공지사항 목록 조회
+    public List<NoticeResponseDto> getAllNotices() {
+        List<Notice> notices = noticeRepository.findAll();
+
+        return notices.stream()
+            .map(notice -> NoticeResponseDto.builder()
+                .noticeId(notice.getNoticeId())
+                .adminEmail(notice.getAdmin().getAdminEmail())
+                .title(notice.getTitle())
+                .contents(notice.getContents())
+                .regDate(notice.getRegDate())
+                .status(notice.getStatus().name())
+                .viewCount(notice.getViewCount())
+                .build())
+            .toList();
+    }
+
+    // 공지사항 상세 조회
+    public NoticeResponseDto getNoticeDetail(Long noticeId) {
+        Notice notice = noticeRepository.findById(noticeId)
+                .orElseThrow(() -> new IllegalArgumentException("공지사항을 찾을 수 없습니다. ID: " + noticeId));
+
+        return NoticeResponseDto.builder()
+                .noticeId(notice.getNoticeId())
+                .adminEmail(notice.getAdmin().getAdminEmail())
+                .title(notice.getTitle())
+                .contents(notice.getContents())
+                .regDate(notice.getRegDate())
+                .status(notice.getStatus().name())
+                .viewCount(notice.getViewCount())
+                .build();
+    }
+
+    // 공지사항 수정
+    @Transactional
+    public NoticeResponseDto updateNotice(Long noticeId, NoticeRequestDto requestDto) {
+        Notice notice = noticeRepository.findById(noticeId)
+                .orElseThrow(() -> new IllegalArgumentException("공지사항을 찾을 수 없습니다. ID: " + noticeId));
+
+        // 금지어 체크
+        if (containsForbiddenWords(requestDto.getTitle()) || containsForbiddenWords(requestDto.getContents())) {
+            throw new IllegalArgumentException("공지 내용에 금지어가 포함되어 수정이 거절되었습니다.");
+        }
+
+        // 공지 수정
+        notice.setTitle(requestDto.getTitle());
+        notice.setContents(requestDto.getContents());
+        notice.setEditDate(java.time.LocalDateTime.now());
+
+        Notice saved = noticeRepository.save(notice);
+
+        return NoticeResponseDto.builder()
+                .noticeId(saved.getNoticeId())
+                .adminEmail(saved.getAdmin().getAdminEmail())
+                .title(saved.getTitle())
+                .contents(saved.getContents())
+                .regDate(saved.getRegDate())
+                .status(saved.getStatus().name())
+                .viewCount(saved.getViewCount())
+                .build();
+    }
+
+    // 공지사항 상태 변경 (VISIBLE ↔ REJECTED)
+    @Transactional
+    public NoticeResponseDto updateNoticeStatus(Long noticeId, NoticeStatus status) {
+        Notice notice = noticeRepository.findById(noticeId)
+                .orElseThrow(() -> new IllegalArgumentException("공지사항을 찾을 수 없습니다. ID: " + noticeId));
+
+        notice.setStatus(status);
+        notice.setEditDate(java.time.LocalDateTime.now());
+
+        Notice saved = noticeRepository.save(notice);
+
+        return NoticeResponseDto.builder()
+                .noticeId(saved.getNoticeId())
+                .adminEmail(saved.getAdmin().getAdminEmail())
+                .title(saved.getTitle())
+                .contents(saved.getContents())
+                .regDate(saved.getRegDate())
+                .status(saved.getStatus().name())
+                .viewCount(saved.getViewCount())
+                .build();
+    }
+
+    // 공지사항 삭제
+    @Transactional
+    public void deleteNotice(Long noticeId) {
+        Notice notice = noticeRepository.findById(noticeId)
+                .orElseThrow(() -> new IllegalArgumentException("공지사항을 찾을 수 없습니다. ID: " + noticeId));
+
+        noticeRepository.delete(notice);
+    }
+
+    // 조회수 증가
+    @Transactional
+    public void incrementViewCount(Long noticeId) {
+        Notice notice = noticeRepository.findById(noticeId)
+                .orElseThrow(() -> new IllegalArgumentException("공지사항을 찾을 수 없습니다. ID: " + noticeId));
+        notice.setViewCount(notice.getViewCount() + 1);
+        noticeRepository.save(notice);
     }
 
     // 🔸 금지어 필터링

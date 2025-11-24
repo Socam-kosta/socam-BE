@@ -22,7 +22,12 @@ public class AdminLectureServiceImpl implements AdminLectureService {
 
     @Override
     public List<LectureAdminListResponseDto> getPendingLectures() {
-        List<Lecture> lectures = lectureRepository.findByStatus(LectureStatus.PENDING);
+        return getLecturesByStatus(LectureStatus.PENDING);
+    }
+
+    @Override
+    public List<LectureAdminListResponseDto> getLecturesByStatus(LectureStatus status) {
+        List<Lecture> lectures = lectureRepository.findByStatus(status);
 
         return lectures.stream().map(lec -> {
             Org org = orgRepository.findById(lec.getEmail())
