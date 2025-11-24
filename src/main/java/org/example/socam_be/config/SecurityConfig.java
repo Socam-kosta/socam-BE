@@ -78,6 +78,9 @@ public class SecurityConfig {
 //                                "/api/org/password-reset-request",
 //                                "/api/org/reset-password",
 
+                                // 운영기관 공개 API
+                                "/api/org/public/**",
+
                                 // 관리자 로그인
                                 "/api/admin/login",
 
@@ -105,6 +108,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/org/check-email").permitAll()
                         .requestMatchers("/api/org/password-reset-request").permitAll()
                         .requestMatchers("/api/org/reset-password").permitAll()
+                        .requestMatchers("/api/org/public/**").permitAll()
 
                         .requestMatchers("/api/org/lecture/**").hasRole("ORG")
                         .requestMatchers("/api/org/me").hasRole("ORG")
