@@ -93,6 +93,9 @@ public class SecurityConfig {
                                 // 리뷰 조회 (공개 API - 강의별 리뷰 조회만)
                                 "/api/review/lecture/**",
 
+                                // 공지사항 조회 (공개 API)
+                                "/api/notices/**",
+
                                 // swagger
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",

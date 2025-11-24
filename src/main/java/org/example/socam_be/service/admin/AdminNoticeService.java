@@ -147,6 +147,15 @@ public class AdminNoticeService {
         noticeRepository.delete(notice);
     }
 
+    // 조회수 증가
+    @Transactional
+    public void incrementViewCount(Long noticeId) {
+        Notice notice = noticeRepository.findById(noticeId)
+                .orElseThrow(() -> new IllegalArgumentException("공지사항을 찾을 수 없습니다. ID: " + noticeId));
+        notice.setViewCount(notice.getViewCount() + 1);
+        noticeRepository.save(notice);
+    }
+
     // 🔸 금지어 필터링
     private boolean containsForbiddenWords(String text) {
         List<String> forbidden = List.of("광고", "음란", "불법");
