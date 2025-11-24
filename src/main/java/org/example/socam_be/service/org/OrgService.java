@@ -20,8 +20,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -191,5 +193,13 @@ public class OrgService {
                 .orElseThrow(() -> new IllegalArgumentException("운영기관을 찾을 수 없습니다."));
 
         org.setPassword(passwordEncoder.encode(newPassword));
+    }
+
+    /** 승인된 운영기관 목록 조회 (공개 API) */
+    public List<OrgResponseDto> getApprovedOrgs() {
+        List<Org> orgs = orgRepository.findByStatus(OrgStatus.APPROVED);
+        return orgs.stream()
+                .map(OrgResponseDto::new)
+                .collect(Collectors.toList());
     }
 }
