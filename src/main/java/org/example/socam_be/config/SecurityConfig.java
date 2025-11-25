@@ -66,17 +66,19 @@ public class SecurityConfig {
                                 "/api/users/login",
                                 "/api/users/check-email",
                                 "/api/users/check-nickname",
+                                "/api/users/reset-password",
+                                "/api/users/password-reset-request",
 
                                 // 토큰 재발급
                                 "/api/auth/**",
 
 //                                // 운영기관 비인증 접근 허용
-//                                "/api/org/register",
-//                                "/api/org/register/**",
-//                                "/api/org/login",
-//                                "/api/org/check-email",
-//                                "/api/org/password-reset-request",
-//                                "/api/org/reset-password",
+                                "/api/org/register",
+                                "/api/org/register/**",
+                                "/api/org/login",
+                                "/api/org/check-email",
+                                "/api/org/password-reset-request",
+                                "/api/org/reset-password",
 
                                 // 운영기관 공개 API
                                 "/api/org/public/**",
@@ -106,13 +108,6 @@ public class SecurityConfig {
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
 
                         // 운영기관 보호: 로그인 이후 사용할 API만 지정
-                        .requestMatchers("/api/org/register", "/api/org/register/**").permitAll()
-                        .requestMatchers("/api/org/login").permitAll()
-                        .requestMatchers("/api/org/check-email").permitAll()
-                        .requestMatchers("/api/org/password-reset-request").permitAll()
-                        .requestMatchers("/api/org/reset-password").permitAll()
-                        .requestMatchers("/api/org/public/**").permitAll()
-
                         .requestMatchers("/api/org/lecture/**").hasRole("ORG")
                         .requestMatchers("/api/org/me").hasRole("ORG")
                         .requestMatchers("/api/org/delete/**").hasRole("ORG")
