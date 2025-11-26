@@ -1,55 +1,103 @@
 package org.example.socam_be.config;
 
 import io.jsonwebtoken.JwtException;
-import org.example.socam_be.util.JwtUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;  // jakarta.servlet 패키지 사용
-import org.springframework.security.authentication.AuthenticationManager;
+import jakarta.servlet.http.HttpServletResponse;
+import org.example.socam_be.util.JwtUtils;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.Collections;
+import java.util.ArrayList;
+import java.util.List;
 
+@Component
 public class JwtFilter extends OncePerRequestFilter {
 
-  private final AuthenticationManager authenticationManager;
+    @Override
+    protected void doFilterInternal(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            FilterChain filterChain
+    ) throws ServletException, IOException {
 
-  // JwtFilter 생성자
-  public JwtFilter(AuthenticationManager authenticationManager) {
-    this.authenticationManager = authenticationManager;
-  }
+        String path = request.getRequestURI();
 
-  // doFilterInternal 메서드 구현
-  @Override
-  protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-    String token = request.getHeader("Authorization");
+        // ================================
+        // 인증 제외 경로 (로그인, 회원가입)
+        // ================================
+        if (path.equals("/api/admin/login") ||
+                path.startsWith("/api/users/register") ||
+                path.startsWith("/api/users/login") ||
+                path.startsWith("/api/users/check-email") ||
+                path.startsWith("/api/users/check-nickname") ||
+                path.startsWith("/api/auth/refresh") ||
+                path.startsWith("/api/org/register") ||
+                path.startsWith("/api/org/login") ||
+                path.startsWith("/api/org/check-email") ||
+                path.startsWith("/api/org/public") ||
+                path.startsWith("/api/notices") ||
+                path.startsWith("/api/users/password-reset-request") ||
+                path.startsWith("/api/users/reset-password") ||
+                path.startsWith("/api/org/password-reset-request") ||
+                path.startsWith("/api/org/reset-password")) {
 
-    // Bearer Token인 경우 처리
-    if (token != null && token.startsWith("Bearer ")) {
-      try {
-        // JWT 토큰에서 이메일 추출
-        System.out.println("test "+token.substring(7));
-        String email = JwtUtils.getEmailFromToken(token.substring(7));  // 'Bearer ' 제거
-        if (email != null) {
-          // 인증 객체 생성
-          UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-              email, null, Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"))
-          );
-          // 인증 정보를 SecurityContext에 설정
-          SecurityContextHolder.getContext().setAuthentication(authentication);
+            filterChain.doFilter(request, response);
+            return;
         }
-      } catch (JwtException | IllegalArgumentException e) {
-        // 토큰이 유효하지 않거나 만료된 경우
-        SecurityContextHolder.clearContext();
-      }
-    }
 
-    // 후속 필터 실행
-    filterChain.doFilter(request, response);
-  }
+        // ================================
+        // JWT 인증 처리 시작
+        // ================================
+        String token = request.getHeader("Authorization");
+
+        if (token != null && token.startsWith("Bearer ")) {
+            try {
+                String rawToken = token.substring(7);
+
+                // JWT에서 이메일과 역할 파싱
+                String email = JwtUtils.getEmailFromToken(rawToken);
+                String role = JwtUtils.getRoleFromToken(rawToken);
+
+                if (email != null) {
+                    request.setAttribute("email", email); // 컨트롤러에서 사용 가능
+
+                    // ================================
+                    // ROLE 부여
+                    // ================================
+                    List<SimpleGrantedAuthority> authorities = new ArrayList<>();
+
+                    if ("ORG".equalsIgnoreCase(role)) {
+                        authorities.add(new SimpleGrantedAuthority("ROLE_ORG"));
+                    } else if ("ADMIN".equalsIgnoreCase(role)) {
+                        authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
+                    } else {
+                        // USER 또는 null인 경우 모두 ROLE_USER로 설정
+                        authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
+                    }
+
+                    UsernamePasswordAuthenticationToken auth =
+                            new UsernamePasswordAuthenticationToken(
+                                    email,
+                                    null,
+                                    authorities
+                            );
+
+                    SecurityContextHolder.getContext().setAuthentication(auth);
+                }
+
+            } catch (JwtException | IllegalArgumentException e) {
+                // 토큰 파싱 실패 시 로그 출력
+                System.err.println("JWT 토큰 파싱 실패: " + e.getMessage());
+                SecurityContextHolder.clearContext();
+            }
+        }
+
+        filterChain.doFilter(request, response);
+    }
 }
