@@ -78,7 +78,12 @@ public class UserController {
     @Operation(summary = "내 정보 수정", description = "로그인한 사용자의 정보를 수정합니다.")
     @PutMapping("/me")
     public ResponseEntity<UserResDto> updateMyInfo(@RequestBody UpdateUserReqDto dto) {
-        String email = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        var auth = SecurityContextHolder.getContext().getAuthentication();
+        System.out.println("[UserController] /api/users/me auth=" + auth);
+
+        String email = (String) auth.getPrincipal();
+        System.out.println("[UserController] /api/users/me principal email=" + email);
+
         UserResDto updated = userService.updateUserInfo(email, dto);
         return ResponseEntity.ok(updated);
     }

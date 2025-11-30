@@ -27,6 +27,10 @@ public class JwtFilter extends OncePerRequestFilter {
     ) throws ServletException, IOException {
 
         String path = request.getRequestURI();
+        String method = request.getMethod();
+
+        // 디버그 로그 추가
+        System.out.println("[JwtFilter] " + method + " " + path);
 
         // ================================
         // 인증 제외 경로 (로그인, 회원가입)
@@ -47,6 +51,7 @@ public class JwtFilter extends OncePerRequestFilter {
                 path.startsWith("/api/org/password-reset-request") ||
                 path.startsWith("/api/org/reset-password")) {
 
+            System.out.println("[JwtFilter] skip auth for path=" + path);
             filterChain.doFilter(request, response);
             return;
         }
@@ -55,47 +60,41 @@ public class JwtFilter extends OncePerRequestFilter {
         // JWT 인증 처리 시작
         // ================================
         String token = request.getHeader("Authorization");
+        System.out.println("[JwtFilter] Authorization header=" + token);
 
         if (token != null && token.startsWith("Bearer ")) {
             try {
                 String rawToken = token.substring(7);
 
-                // JWT에서 이메일과 역할 파싱
                 String email = JwtUtils.getEmailFromToken(rawToken);
-                String role = JwtUtils.getRoleFromToken(rawToken);
+                String role  = JwtUtils.getRoleFromToken(rawToken);
+                System.out.println("[JwtFilter] parsed email=" + email + ", role=" + role);
 
                 if (email != null) {
-                    request.setAttribute("email", email); // 컨트롤러에서 사용 가능
+                    request.setAttribute("email", email);
 
-                    // ================================
-                    // ROLE 부여
-                    // ================================
                     List<SimpleGrantedAuthority> authorities = new ArrayList<>();
-
                     if ("ORG".equalsIgnoreCase(role)) {
                         authorities.add(new SimpleGrantedAuthority("ROLE_ORG"));
                     } else if ("ADMIN".equalsIgnoreCase(role)) {
                         authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
                     } else {
-                        // USER 또는 null인 경우 모두 ROLE_USER로 설정
                         authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
                     }
 
                     UsernamePasswordAuthenticationToken auth =
-                            new UsernamePasswordAuthenticationToken(
-                                    email,
-                                    null,
-                                    authorities
-                            );
+                            new UsernamePasswordAuthenticationToken(email, null, authorities);
 
                     SecurityContextHolder.getContext().setAuthentication(auth);
+                    System.out.println("[JwtFilter] SecurityContext set: " + auth);
                 }
 
             } catch (JwtException | IllegalArgumentException e) {
-                // 토큰 파싱 실패 시 로그 출력
-                System.err.println("JWT 토큰 파싱 실패: " + e.getMessage());
+                System.err.println("[JwtFilter] JWT 토큰 파싱 실패: " + e.getMessage());
                 SecurityContextHolder.clearContext();
             }
+        } else {
+            System.out.println("[JwtFilter] Authorization header is null or invalid format");
         }
 
         filterChain.doFilter(request, response);
