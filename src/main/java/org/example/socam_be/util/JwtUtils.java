@@ -61,13 +61,15 @@ public class JwtUtils {
   }
 
   public static String getEmailFromToken(String token) {
-    return Jwts.parserBuilder()
+    Claims claims = Jwts.parserBuilder()
             .setSigningKey(SECRET_KEY)
             .build()
             .parseClaimsJws(token)
-            .getBody()
-            .get("email", String.class);
-  }
+            .getBody();
+
+    String email = claims.get("email", String.class);
+    return email != null ? email : claims.getSubject();
+}
 
   public static String getRoleFromToken(String token) {
     return Jwts.parserBuilder()
