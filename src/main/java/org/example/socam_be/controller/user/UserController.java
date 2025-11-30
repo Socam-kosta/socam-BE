@@ -74,23 +74,20 @@ public class UserController {
         return ResponseEntity.ok(userInfo);
     }
 
-    // ✏ 회원정보 수정
-    @Operation(summary = "회원정보 수정", description = "이메일 기준으로 회원 정보를 수정합니다.")
-    @PutMapping("/{email}")
-    public ResponseEntity<UserResDto> updateUser(
-        @Parameter(description = "회원 이메일") @PathVariable String email,
-        @RequestBody UpdateUserReqDto dto
-    ) {
+    // ✏ 내 정보 수정 (토큰의 이메일 기준)
+    @Operation(summary = "내 정보 수정", description = "로그인한 사용자의 정보를 수정합니다.")
+    @PutMapping("/me")
+    public ResponseEntity<UserResDto> updateMyInfo(@RequestBody UpdateUserReqDto dto) {
+        String email = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         UserResDto updated = userService.updateUserInfo(email, dto);
         return ResponseEntity.ok(updated);
     }
 
-    // ❌ 회원 탈퇴
-    @Operation(summary = "회원 탈퇴", description = "이메일 기준으로 회원 정보를 삭제합니다.")
-    @DeleteMapping("/{email}")
-    public ResponseEntity<Void> deleteUser(
-        @Parameter(description = "회원 이메일") @PathVariable String email
-    ) {
+    // ❌ 내 계정 삭제 (토큰의 이메일 기준)
+    @Operation(summary = "회원 탈퇴", description = "로그인한 사용자의 계정을 삭제합니다.")
+    @DeleteMapping("/me")
+    public ResponseEntity<Void> deleteMyAccount() {
+        String email = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         userService.deleteUser(email);
         return ResponseEntity.noContent().build();
     }
