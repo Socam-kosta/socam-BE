@@ -68,7 +68,9 @@ public class JwtUtils {
             .getBody();
 
     String email = claims.get("email", String.class);
-    return email != null ? email : claims.getSubject();
+    return (email != null && !email.isBlank())
+            ? email
+            : claims.getSubject();
 }
 
   public static String getRoleFromToken(String token) {
