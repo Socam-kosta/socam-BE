@@ -6,8 +6,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class UpdateUserReqDto {
-    private String email;
-    private String name;
+    // ✅ 닉네임만 수정 가능하도록 필드 정리
     private String nickname;
-    private String password; // 선택적으로 수정 가능
 }
