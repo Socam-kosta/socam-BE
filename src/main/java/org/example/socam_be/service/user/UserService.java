@@ -100,23 +100,30 @@ public class UserService {
         return refreshTokenRepository.findByRefreshToken(refreshToken) != null;
     }
 
-    // ✅ 회원정보 수정
+    // ✅ 회원정보 수정 (닉네임만 수정)
     @Transactional
     public UserResDto updateUserInfo(String email, UpdateUserReqDto dto) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-        if (!user.getNickname().equals(dto.getNickname()) && isNicknameDuplicate(dto.getNickname())) {
-            throw new IllegalArgumentException("이미 사용 중인 닉네임입니다.");
+        // dto.getNickname() 이 null/빈문자면 아무것도 안 함 (기존 값 유지)
+        if (dto.getNickname() != null && !dto.getNickname().isBlank()) {
+
+            // 닉네임이 실제로 변경되는 경우에만 중복 체크
+            if (!dto.getNickname().equals(user.getNickname())
+                    && isNicknameDuplicate(dto.getNickname())) {
+                throw new IllegalArgumentException("이미 사용 중인 닉네임입니다.");
+            }
+
+            user.setNickname(dto.getNickname());
         }
 
-        user.setName(dto.getName());
-        user.setNickname(dto.getNickname());
-        if (dto.getPassword() != null && !dto.getPassword().isBlank()) {
-            user.setPassword(passwordEncoder.encode(dto.getPassword()));
-        }
+        // ❌ 더 이상 name, password는 여기서 건드리지 않음
+        // user.setName(...)
+        // user.setPassword(...)
 
-        return new UserResDto(user); // @Transactional dirty checking 적용됨
+        // @Transactional dirty checking으로 자동 반영
+        return new UserResDto(user);
     }
 
     // ✅ 회원 탈퇴
