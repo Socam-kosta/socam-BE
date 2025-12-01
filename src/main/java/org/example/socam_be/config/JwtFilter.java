@@ -27,14 +27,8 @@ public class JwtFilter extends OncePerRequestFilter {
     ) throws ServletException, IOException {
 
         String path = request.getRequestURI();
-        String method = request.getMethod();
 
-        // 디버그 로그 추가
-        System.out.println("[JwtFilter] " + method + " " + path);
-
-        // ================================
-        // 인증 제외 경로 (로그인, 회원가입)
-        // ================================
+        // 1) 예외 경로 로그
         if (path.equals("/api/admin/login") ||
                 path.startsWith("/api/users/register") ||
                 path.startsWith("/api/users/login") ||
@@ -51,29 +45,29 @@ public class JwtFilter extends OncePerRequestFilter {
                 path.startsWith("/api/org/password-reset-request") ||
                 path.startsWith("/api/org/reset-password")) {
 
-            System.out.println("[JwtFilter] skip auth for path=" + path);
+            // 디버그용
+            System.out.println("[JwtFilter] SKIP path = " + path);
             filterChain.doFilter(request, response);
             return;
         }
 
-        // ================================
-        // JWT 인증 처리 시작
-        // ================================
-        String token = request.getHeader("Authorization");
-        System.out.println("[JwtFilter] Authorization header=" + token);
+        String authHeader = request.getHeader("Authorization");
+        System.out.println("[JwtFilter] path=" + path + ", Authorization=" + authHeader);
 
-        if (token != null && token.startsWith("Bearer ")) {
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
             try {
-                String rawToken = token.substring(7);
+                String rawToken = authHeader.substring(7);
 
                 String email = JwtUtils.getEmailFromToken(rawToken);
                 String role  = JwtUtils.getRoleFromToken(rawToken);
-                System.out.println("[JwtFilter] parsed email=" + email + ", role=" + role);
 
-                if (email != null) {
+                System.out.println("[JwtFilter] token parsed. email=" + email + ", role=" + role);
+
+                if (email != null && !email.isBlank()) {
                     request.setAttribute("email", email);
 
                     List<SimpleGrantedAuthority> authorities = new ArrayList<>();
+
                     if ("ORG".equalsIgnoreCase(role)) {
                         authorities.add(new SimpleGrantedAuthority("ROLE_ORG"));
                     } else if ("ADMIN".equalsIgnoreCase(role)) {
@@ -86,15 +80,20 @@ public class JwtFilter extends OncePerRequestFilter {
                             new UsernamePasswordAuthenticationToken(email, null, authorities);
 
                     SecurityContextHolder.getContext().setAuthentication(auth);
-                    System.out.println("[JwtFilter] SecurityContext set: " + auth);
+                    System.out.println("[JwtFilter] Authentication set. authorities=" + authorities);
+                } else {
+                    System.out.println("[JwtFilter] email is null. Authentication NOT set.");
                 }
 
+            } catch (ExpiredJwtException e) {
+                System.out.println("[JwtFilter] token expired: " + e.getMessage());
+                SecurityContextHolder.clearContext();
             } catch (JwtException | IllegalArgumentException e) {
-                System.err.println("[JwtFilter] JWT 토큰 파싱 실패: " + e.getMessage());
+                System.out.println("[JwtFilter] token invalid: " + e.getMessage());
                 SecurityContextHolder.clearContext();
             }
         } else {
-            System.out.println("[JwtFilter] Authorization header is null or invalid format");
+            System.out.println("[JwtFilter] no Authorization header for path=" + path);
         }
 
         filterChain.doFilter(request, response);
