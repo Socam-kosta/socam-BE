@@ -1,38 +1,33 @@
-```
-project-root/
+socam-BE/
 │
-├── 📂 src/main/java/com/project/
+├── 📂 src/main/java/org/example/socam_be/
 │   │
-│   ├── ⚙️ config/                     # DB 설정, MyBatis 설정, ViewResolver 설정
+│   ├── ⚙️ config/                     # Security(JWT 필터, CORS), S3, Swagger 설정
 │   │
-│   ├── 🎯 controller/                 # 웹 요청 처리 (JSP 연결)
+│   ├── 🎯 controller/                 # REST API 요청 처리 (JSON 응답)
+│   │   ├── admin/                    # 관리자 전용 API (강의 승인, 운영기관 승인 등)
+│   │   ├── lecture/                  # 강의 조회 API
+│   │   ├── org/                      # 운영기관 API
+│   │   └── user/                     # 사용자 API (인증, 리뷰, 찜)
 │   │
 │   ├── 💼 service/                    # 비즈니스 로직
-│   │   └── impl/                     # Service 구현체
+│   │   ├── admin/                    # 관리자 도메인 서비스
+│   │   ├── impl/                     # 외부 API 연동 구현체 (Clova/Local OCR)
+│   │   ├── lecture/, org/, user/     # 도메인별 서비스
 │   │
-│   ├── 🗄️ repository/                 # DB 접근 (MyBatis Mapper Interface)
+│   ├── 🗄️ repository/                 # DB 접근 (Spring Data JPA - JpaRepository 인터페이스)
 │   │
-│   ├── 📦 domain/                     # Entity / 테이블 매핑 객체
+│   ├── 📦 domain/                     # JPA Entity (@Entity)
 │   │
 │   ├── 📋 dto/                        # 요청/응답용 DTO
 │   │
-│   ├── 🗺️ mapper/                     # MyBatis XML Mapper (SQL)
+│   ├── 🔐 security/                   # JWT 토큰 발급·검증 서비스
 │   │
-│   ├── 🛠️ util/                       # 파일 업로드, 유틸리티 함수
+│   ├── 🛠️ util/                       # JWT 유틸리티
 │   │
-│   └── ⚠️ exception/                  # 예외 처리
+│   └── ⚠️ exception/                  # 전역 예외 처리 (CustomException, ErrorCode)
 │
 ├── 📂 src/main/resources/
-│   ├── 📄 application.properties     # 애플리케이션 설정
-│   └── 📂 mapper/                     # Mapper XML 파일 위치
+│   └── 📄 application.yml            # 애플리케이션 설정 (DB, JWT, S3, Clova OCR 키 등)
 │
-├── 📂 src/main/webapp/
-│   ├── 📂 WEB-INF/
-│   │   ├── 📂 views/                  # JSP 화면
-│   │   └── 📄 web.xml                 # 웹 애플리케이션 설정
-│   │
-│   ├── 📂 resources/
-│   │   └── 📂 uploads/                # 업로드 파일 저장소
-│
-└── 📄 application.yml / build.gradle          # 빌드 설정 파일
-```
+└── 📄 build.gradle                    # 빌드 설정 (Spring Data JPA, Security, JWT, AWS S3 SDK)
